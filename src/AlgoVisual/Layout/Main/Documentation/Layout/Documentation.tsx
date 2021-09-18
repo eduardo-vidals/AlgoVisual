@@ -28,25 +28,25 @@ class Documentation extends React.Component {
             <main className={"main-sidebar"}>
                 <div className={"sidebar"}>
                     <div id={"documentation-section"}>
-                        <Link to={"/documentation"} className={"documentation-link"}>
+                        <Link to={"/AlgoVisual/documentation"} className={"documentation-link"}>
                             <div className={"section"} ref={this.gettingStartedSection}>
                                 <p> Introduction </p>
                             </div>
                         </Link>
 
-                        <Link to={"/documentation/data-structures"} className={"documentation-link"}>
+                        <Link to={"/AlgoVisual/documentation/data-structures"} className={"documentation-link"}>
                             <div className={"section"} ref={this.dataStructuresSection}>
                                 <p> Data Structures </p>
                             </div>
                         </Link>
 
-                        <Link to={"/documentation/sorting"} className={"documentation-link"}>
+                        <Link to={"/AlgoVisual/documentation/sorting"} className={"documentation-link"}>
                             <div className={"section"} ref={this.sortingSection}>
                                 <p> Sorting </p>
                             </div>
                         </Link>
 
-                        <Link to={"/documentation/pathfinding"} className={"documentation-link"}>
+                        <Link to={"/AlgoVisual/documentation/pathfinding"} className={"documentation-link"}>
                             <div className={"section"} ref={this.pathfindingSection}>
                                 <p> Pathfinding </p>
                             </div>
@@ -55,32 +55,32 @@ class Documentation extends React.Component {
                 </div>
                 <Switch>
                     // main documentation page
-                    <Route exact path={"/documentation"}>
+                    <Route exact path={"/AlgoVisual/documentation"}>
                         <GettingStarted section={this.gettingStartedSection}/>
                     </Route>
 
                     // data structures & sections
-                    <Route exact path={"/documentation/data-structures"}>
+                    <Route exact path={"/AlgoVisual/documentation/data-structures"}>
                         <DataStructures section={this.dataStructuresSection}/>
                     </Route>
 
 
-                    <Route exact path={"/documentation/data-structures/array-list"}>
+                    <Route exact path={"/AlgoVisual/documentation/data-structures/array-list"}>
                         <ArrayListDocumentation section={this.dataStructuresSection}/>
                     </Route>
 
-                    <Route exact path={"/documentation/data-structures/linked-list"}>
+                    <Route exact path={"/AlgoVisual/documentation/data-structures/linked-list"}>
                         <LinkedListDocumentation section={this.dataStructuresSection}/>
                     </Route>
 
                     // sorting & sections
-                    <Route exact path={"/documentation/sorting"}>
+                    <Route exact path={"/AlgoVisual/documentation/sorting"}>
                         <Sorting section={this.sortingSection}/>
                     </Route>
 
 
                     // pathfinding & sections
-                    <Route exact path={"/documentation/pathfinding"}>
+                    <Route exact path={"/AlgoVisual/documentation/pathfinding"}>
                         <Pathfinding section={this.pathfindingSection}/>
                     </Route>
                 </Switch>

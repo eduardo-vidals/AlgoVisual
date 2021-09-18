@@ -20,16 +20,16 @@ class Home extends React.Component<Props, State> {
                 </p>
 
                 <div id={"buttons-menu"}>
-                    <Link to={"/sorting"}>
+                    <Link to={"/AlgoVisual/sorting"}>
                         <div className={"home-section"}> Sorting Algorithms </div>
                     </Link>
 
-                    <Link to={"/pathfinding"}>
+                    <Link to={"/AlgoVisual/pathfinding"}>
                         <div className={"home-section"}> Pathfinding Algorithms </div>
                     </Link>
 
 
-                    <Link to={"/datastructures"}>
+                    <Link to={"/AlgoVisual/datastructures"}>
                         <div className={"home-section"}> Data Structures </div>
                     </Link>
                 </div>

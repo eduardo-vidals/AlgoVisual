@@ -21,23 +21,23 @@ class App extends React.Component<Props, State> {
                 <div id={"app-wrapper"}>
                     <Header/>
                     <Switch>
-                        <Route exact path="AlgoVisual/">
+                        <Route exact path="/AlgoVisual">
                             <Home/>
                         </Route>
 
-                        <Route exact path="/sorting">
+                        <Route exact path="/AlgoVisual/sorting">
                             <SortingVisualizer/>
                         </Route>
 
-                        <Route exact path="/pathfinding">
+                        <Route exact path="/AlgoVisual/pathfinding">
 
                         </Route>
 
-                        <Route path="/documentation">
+                        <Route path="/AlgoVisual/documentation">
                             <Documentation/>
                         </Route>
 
-                        <Route path="/about">
+                        <Route path="/AlgoVisual/about">
 
                         </Route>
                     </Switch>

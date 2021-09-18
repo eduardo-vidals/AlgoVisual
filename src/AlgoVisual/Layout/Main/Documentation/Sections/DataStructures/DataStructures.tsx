@@ -65,27 +65,27 @@ class DataStructures extends React.Component<Props, State> {
                             <p className={"sections-header"}> Content that will be covered: </p>
                             <div className={"sections"}>
                                 <ul>
-                                    <Link to={"/documentation/data-structures/array-list"}>
+                                    <Link to={"/AlgoVisual/documentation/data-structures/array-list"}>
                                         <li> 1. ArrayList</li>
                                     </Link>
                                     <hr className={"section-break"}/>
 
-                                    <Link to={"/documentation/data-structures/linked-list"}>
+                                    <Link to={"/AlgoVisual/documentation/data-structures/linked-list"}>
                                         <li> 2. LinkedList</li>
                                     </Link>
                                     <hr className={"section-break"}/>
 
-                                    <Link to={"/documentation/data-structures/heaps"}>
+                                    <Link to={"/AlgoVisual/documentation/data-structures/heaps"}>
                                         <li> 3. Heaps</li>
                                     </Link>
                                     <hr className={"section-break"}/>
 
-                                    <Link to={"/documentation/data-structures/binary-search-trees"}>
+                                    <Link to={"/AlgoVisual/documentation/data-structures/binary-search-trees"}>
                                         <li> 4. Binary Search Trees</li>
                                     </Link>
                                     <hr className={"section-break"}/>
 
-                                    <Link to={"/documentation/data-structures/b"}>
+                                    <Link to={"/AlgoVisual/documentation/data-structures/analysis-of-data-structures"}>
                                         <li> 5. Analysis of Data Structures </li>
                                     </Link>
                                 </ul>

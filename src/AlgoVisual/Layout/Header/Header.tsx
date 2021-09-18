@@ -55,7 +55,7 @@ class Header extends React.Component<Props, State> {
         return (
             <header id={"header"}>
                 <div id={"logo-wrapper"}>
-                    <Link to={"/"}>
+                    <Link to={"/AlgoVisual"}>
                         <p id={"name"}> AlgoVisual </p>
                     </Link>
                 </div>
@@ -72,7 +72,7 @@ class Header extends React.Component<Props, State> {
                                     <div id={"dropdown"} ref={this.dropdownMenu}>
                                         <ul>
                                             <li>
-                                                <Link to={"/sorting"} className={"nav-link"}>
+                                                <Link to={"/AlgoVisual/sorting"} className={"nav-link"}>
                                                     <div className={"algos-option"}>
                                                         <p> Sorting </p>
                                                     </div>
@@ -80,7 +80,7 @@ class Header extends React.Component<Props, State> {
                                             </li>
 
                                             <li>
-                                                <Link to={"/pathfinding"} className={"nav-link"}>
+                                                <Link to={"/AlgoVisual/pathfinding"} className={"nav-link"}>
                                                     <div className={"algos-option"}>
                                                         <p> Pathfinding </p>
                                                     </div>
@@ -88,7 +88,7 @@ class Header extends React.Component<Props, State> {
                                             </li>
 
                                             <li>
-                                                <Link to={"/datastructures"} className={"nav-link"}>
+                                                <Link to={"/AlgoVisual/datastructures"} className={"nav-link"}>
                                                     <div className={"algos-option"}>
                                                         <p> Data Structures </p>
                                                     </div>
@@ -100,7 +100,7 @@ class Header extends React.Component<Props, State> {
                             </li>
 
                             <li>
-                                <Link to={"/documentation"} className={"nav-link"}>
+                                <Link to={"/AlgoVisual/documentation"} className={"nav-link"}>
                                     <div className={"nav-option"}>
                                         <p> Documentation </p>
                                     </div>
@@ -108,7 +108,7 @@ class Header extends React.Component<Props, State> {
                             </li>
 
                             <li>
-                                <Link to={"/about"} className={"nav-link"}>
+                                <Link to={"/AlgoVisual/about"} className={"nav-link"}>
                                     <div className={"nav-option"}>
                                         <p> About </p>
                                     </div>
