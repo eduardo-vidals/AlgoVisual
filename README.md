@@ -8,14 +8,14 @@
 
 **[⛏]** Visualize data dtructures
 
-**[⛏]** Visualize sorting algorithms
+**[✔]** Visualize sorting algorithms
 
 **[⛏]** Visualize path finding algorithms
 
 **[⛏]** Algorithm implementations provided in Java
 
 ## Supported Algorithms
-**[⛏]** Sorting Algorithms: Bubble Sort, Insertion Sort, Selection Sort, Merge Sort, Quick Sort, & Heap Sort
+**[✔]** Sorting Algorithms: Bubble Sort, Insertion Sort, Selection Sort, Merge Sort, Quick Sort, & Heap Sort
 
 **[⛏]** Data Structures: ArrayList, LinkedList, Stack, Deque, Queue, MaxPQ, MinPQ, BST, & Red-Black BST
 
