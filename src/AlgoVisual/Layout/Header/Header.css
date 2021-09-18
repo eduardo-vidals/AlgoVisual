@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#header {
+    background-color: #33435d;
+    display: flex;
+    align-items: center;
+    color: white;
+    word-break: break-all;
+}
+
+#logo-wrapper {
+    display: flex;
+    align-items: center;
+    margin-right: 50px;
+}
+
+#logo-wrapper a {
+    color: white;
+    text-decoration: none;
+}
+
+#name {
+    font-size: 40px;
+    padding: 10px 10px;
+    color: white;
+}
+
+#name:hover {
+    color: #98d6e8;
+    transition: all 150ms linear;
+}
+
+#nav-bar > ul {
+    padding: 0;
+    margin: 0;
+}
+
+#nav-bar > ul > li {
+    display: inline-block;
+    font-size: 30px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+}
+
+.nav-option:hover, .algos-option:hover {
+    color: #98d6e8;
+    transition: all 150ms linear;
+}
+
+
+.nav-option {
+    display: flex;
+    align-items: center;
+    padding: 15px 30px 16px 0;
+    word-break: break-all;
+}
+
+.fa-caret-down {
+    margin-top: 5px;
+    margin-left: 3px;
+}
+
+#dropdown {
+    position: absolute;
+    top: 85px;
+    background-color: #475c83;
+    border-radius: 5px;
+    display: none;
+    animation: growDown 350ms ease-in-out forwards;
+    transform-origin: top center;
+}
+
+#dropdown ul li {
+    font-size: 20px;
+    color: white;
+    display: flex;
+}
+
+.algos-option {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes growDown {
+    0% {
+        transform: scaleY(0)
+    }
+    80% {
+        transform: scaleY(1.1)
+    }
+    100% {
+        transform: scaleY(1)
+    }
+}

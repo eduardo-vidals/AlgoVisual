@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+#home-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    flex: 1;
+}
+
+#home-header-text {
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-size: 50px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+#home-text {
+    text-align: center;
+    font-size: 20px;
+    padding: 10px;
+    width: 38vw;
+}
+
+#buttons-menu {
+    display: flex;
+}
+
+#buttons-menu a {
+    text-decoration: none;
+}
+
+.home-section {
+    background-color: #33435d;
+    color: white;
+    padding: 10px;
+    margin: 10px 5px 20px 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+
+}
+
+.home-section:hover {
+    color: #98d6e8;
+    transition: all 150ms linear;
+}

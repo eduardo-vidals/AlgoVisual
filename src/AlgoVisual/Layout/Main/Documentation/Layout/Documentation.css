@@ -1,0 +1,31 @@
+#documentation-wrapper {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.sidebar {
+    display: flex;
+    justify-content: flex-start;
+}
+
+#documentation-section {
+    width: 100%;
+    text-align: center;
+}
+
+.section {
+    font-size: 20px;
+    padding: 20px;
+}
+
+.section:hover {
+    background-color: #3e5072 !important;
+    color: #98d6e8;
+    transition: all 150ms linear;
+}
+
+.documentation-link {
+    text-decoration: none;
+    color: white;
+}
