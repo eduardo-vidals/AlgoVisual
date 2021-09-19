@@ -2,6 +2,7 @@
 - An algorithm visualizer built using React and Typescript. 
 - For better understanding, code implementations will be provided in the documentation section of the website.
 - **NOTE: This is my first big project and it will primarily focus on the beautiful visualization of data structures and algorithms.**
+- Website is deployed at: https://eduardo-vidals.github.io/AlgoVisual
 
 ## Features 
 **[⛏]** Control visualization speed
