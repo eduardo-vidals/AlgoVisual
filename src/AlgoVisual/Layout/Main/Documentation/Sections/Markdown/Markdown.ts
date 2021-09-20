@@ -45,8 +45,8 @@ public class ArrayList<E> implements Iterable<E> {
 }
 \`\`\`
 
-First, let's implement the straightforward methods of an ArrayList. 
-
+### Relevant Methods
+First, let's implement the straightforward methods of a list.
 \`\`\`java
 public boolean isEmpty() {
     return n == 0;
@@ -57,6 +57,7 @@ public int size() {
 }
 \`\`\`
 
+### Helper Method (Resizing Array)
 Let's now implement our first relevant helper method for an ArrayList. We will need a resize method that will use an array with a new capacity and copies all values from the old array into this new array with an updated capacity. 
 
 \`\`\`java
@@ -69,7 +70,8 @@ private void resize(int capacity) {
 }
 \`\`\`
 
-With this helper method, we are now able to implement our add and remove methods. 
+### Instance Methods
+With the help of the previous helper method, we are now able to implement our add and remove methods. 
 
 \`\`\`java
 public void add(E item){
@@ -92,7 +94,7 @@ public void remove(int index){
     }
 }
 \`\`\`
-### Iterators
+### Iterator
 As a reminder, remember to implement the Iterator interface and implement the following methods: 
 - hasNext()
     - returns true or false depending on whether there is a next element
@@ -119,13 +121,16 @@ private class ListIterator implements Iterator<E> {
     @Override
     public E next(){
         if (!hasNext()){
-            throw new UnsupportedOperationException();
+            throw new NoSuchElementException();
         }
         return copy[i++];
     }
     
     @Override 
     public void remove() {
+        if (i == 0) {
+            throw new IllegalStateException();
+        }
         ArrayList.this.remove(--i);
     }
 }
@@ -143,10 +148,10 @@ This section will go over a simple implementation of ArrayList.
 ## Objects & Classes
 There is sometimes confusion when linked lists are introduced due to not understanding the concept of objects and classes. Therefore, it is important that you understand the idea of having a **inner** class within a class. The idea of a linked list is that an inner class can essentially act as a *pointer* that keeps track of **previous** and **next** nodes. This idea is explained in the image below. 
 
+[TO DO IMAGE]
+
 ## LinkedList Implementation
 Keeping the logic of the last section in mind, we can now initialize the barebones logic of a LinkedList. We will be using generics for our implementation to easily apply our LinkedList across all objects.
-
-[TO DO IMAGE]
 
 \`\`\`java
 public class LinkedList<E> implements Iterable<E> {
@@ -172,17 +177,17 @@ The code above is the barebones logic of a **doubly-linked list.** It will have 
 First, let's implement the straightforward methods of a list.
 \`\`\`java
 public int size(){ 
-    return n 
+    return n;
 }
 
-public int isEmpty(){
+public boolean isEmpty(){
     return n == 0;
 }
 \`\`\`
 
 
 ### Stacks (LIFO)
-Let's introduce the concept of a **stack** as it serves as an important concept in computer science. A **stack** data structure works as **Last In, First Out (LIFO).** An analogy for this data structure is to image a pile of pancakes. Which pancake is the first one removed? The last pancake that was put into the pile will most likely result in it being the first one removed. This concept is easily explained by the image below.
+Let's introduce the concept of a **stack** as it serves as an important concept in computer science. A **stack** data structure works as **Last In, First Out (LIFO).** An analogy for this data structure is to imagine a pile of pancakes. Which pancake is the first one to be removed? The last pancake that was put into the pile will most likely result in it being the first one removed. This concept is easily explained by the image below.
 
 [TO DO IMAGE]
 
@@ -281,32 +286,66 @@ public E removeFirst(){
 A **deque** is simply a combination of a stack and queue data structure. As a result, our LinkedList can be defined as deque data structure as it supports the operations of a stack and queue data structure.
 
 ### Iterator
-Let's now implement an iterator for our LinkedList. 
+Let's now implement an iterator for our LinkedList.
 \`\`\`java
 public Iterator<E> iterator() {
-    return new LinkedListIterator();
+    return new LinkedIterator();
 }
 
-private class LinkedListIterator implements Iterator<E> {
-    private int i; // current index
-    
+private class LinkedIterator implements Iterator<E> {
+    // keep track of current and lastAccessed nodes
+    private Node current = head;
+    private Node lastAccessed = null;
+
     @Override
-    public boolean hasNext(){
-        return i < n;
+    public boolean hasNext() {
+        return current != null;
     }
-    
+
     @Override
-    public E next(){
-        if (!hasNext()){
-            throw new UnsupportedOperationException();
+    public E next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
         }
-        return copy[i++];
+        // update lastAccessed node since it will be used to remove the lastAccessed element
+        // since the current element always updates when next() is called, thus it cannot
+        // be used within remove()
+        lastAccessed = current;
+        E data = current.data;
+        current = current.next;
+        return data;
     }
-    
-    @Override 
+
+    @Override
     public void remove() {
-        ArrayList.this.remove(--i);
-    }
+        if (lastAccessed == null) {
+            throw new IllegalStateException();
+        }
+        if (lastAccessed == head) {
+            LinkedList.this.removeFirst();
+        } else if (lastAccessed == tail) {
+            LinkedList.this.removeLast();
+        } 
+        // update the prev and next pointers of the lastAccessed node
+        // make the lastAccessed node null for garbage collection
+        else {
+            Node prev = lastAccessed.prev;
+            Node next = lastAccessed.next;
+            prev.next = next;
+            next.prev = prev;
+            n--;
+            lastAccessed = null;
+        }
+    }        
 }
 \`\`\`
+
+The **remove()** method might be a bit hard to understand so images will be provided for each case.
+
+[TO DO IMAGE] (removeFirst)
+[TO DO IMAGE] (removeLast)
+[TO DO IMAGE] (otherCases)
+
+## Visualizer
+...And that's it! Our implementation of a LinkedList should be working just fine. Remember, there is also a visualization tool of how the pointers operate in a LinkedList. Click the button below to check out the visualizer!
 `
