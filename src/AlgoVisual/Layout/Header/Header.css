@@ -79,6 +79,7 @@
     display: none;
     animation: growDown 350ms ease-in-out forwards;
     transform-origin: top center;
+    z-index: 1;
 }
 
 #dropdown ul li {
