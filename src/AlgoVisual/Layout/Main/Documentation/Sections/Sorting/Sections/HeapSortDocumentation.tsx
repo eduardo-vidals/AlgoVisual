@@ -1,6 +1,6 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import {arraylistMarkdown} from "../../../Markdown/Markdown";
+import {heapSortMarkdown} from "../../Markdown/Markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
@@ -9,10 +9,10 @@ import themeStyle from "react-syntax-highlighter/dist/esm/styles/prism/nord";
 type Props = {
     section: React.RefObject<HTMLDivElement>
 };
-
 type State = {};
-class ArrayListDocumentation extends React.Component<Props, State>{
-    constructor(props:Props) {
+
+class HeapSortDocumentation extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
     }
 
@@ -34,7 +34,7 @@ class ArrayListDocumentation extends React.Component<Props, State>{
                 <div className={"markdown-wrapper"}>
                     <div className={"markdown"}>
                         <ReactMarkdown
-                            children={arraylistMarkdown}
+                            children={heapSortMarkdown}
                             remarkPlugins={[[remarkGfm], [remarkBreaks]]}
                             components={{
                                 a: ({...props}) => <a target={"_blank"} {...props} />,
@@ -64,4 +64,4 @@ class ArrayListDocumentation extends React.Component<Props, State>{
     }
 }
 
-export default ArrayListDocumentation;
+export default HeapSortDocumentation;

@@ -44,8 +44,8 @@ class SortingVisualizer extends React.Component<Props, State> {
         this.state = {
             arr: [],
             numberOfBars: 100,
-            sortingSpeed: 1,
-            sortingAlgorithm: "Bubble Sort",
+            sortingSpeed:  20,
+            sortingAlgorithm: "Quick Sort",
             showSortingOptions: false,
             optionsDisabled: false,
             animationLength: 0,
@@ -215,12 +215,72 @@ class SortingVisualizer extends React.Component<Props, State> {
 
     quickSort() {
         let animations = getQuickSortAnimations(this.state.arr);
-        this.sort(animations, 2);
+        this.sortTest(animations);
     }
 
     heapSort() {
         let animations = getHeapSortAnimations(this.state.arr);
         this.sort(animations, 3);
+    }
+
+    sortTest(animations: [number, number, string, string][]){
+        let animationLength = animations.length * this.state.sortingSpeed;
+        this.enableSettings(animationLength);
+        for (let i = 0; i < animations.length; i++) {
+            let arrayBars = document.getElementsByClassName('array-bar');
+            if (arrayBars !== undefined) {
+                let animationType = animations[i][2];
+                if (animationType === 'color') {
+                    let [barOneIdx, barTwoIdx] = animations[i];
+                    let barOne = arrayBars[barOneIdx] as HTMLElement;
+                    let barTwo = arrayBars[barTwoIdx] as HTMLElement;
+                    let colorState = animations[i][3];
+                    let color = colorState === 'insert' ? SECONDARY_COLOR : PRIMARY_COLOR;
+                    // keep track of timer to cancel timer operations once the component is unmounted
+                    let t = setTimeout(() => {
+                        if (barOne !== undefined || barTwo !== undefined) {
+                            barOne.style.backgroundColor = color;
+                            barTwo.style.backgroundColor = color;
+                        }
+                    }, i * this.state.sortingSpeed);
+                    // clear timeout if bars are undefined (component is unmounted)
+                    if (barOne === undefined || barTwo === undefined){
+                        clearTimeout(t);
+                    }
+                } else if (animationType === 'swap') {
+                    const [barOneIdx, newHeight] = animations[i];
+                    const barOne = arrayBars[barOneIdx] as HTMLElement;
+                    // keep track of timer to cancel timer operations once the component is unmounted
+                    let t = setTimeout(() => {
+                        if (barOne !== undefined) {
+                            barOne.style.height = newHeight + `px`;
+                        }
+                    }, i * this.state.sortingSpeed);
+                    // clear timeout if bars are undefined (component is unmounted)
+                    if (barOne === undefined){
+                        clearTimeout(t);
+                    }
+                }else if (animationType === 'pivot') {
+                    let [barOneIdx, barTwoIdx] = animations[i];
+                    let barOne = arrayBars[barOneIdx] as HTMLElement;
+                    let barTwo = arrayBars[barTwoIdx] as HTMLElement;
+                    let colorState = animations[i][3];
+                    let color = colorState === 'insert' ? '#83f57f' : PRIMARY_COLOR;
+                    // keep track of timer to cancel timer operations once the component is unmounted
+                    let t = setTimeout(() => {
+                        if (barOne !== undefined || barTwo !== undefined) {
+                            barOne.style.backgroundColor = color;
+                            barTwo.style.backgroundColor = color;
+                        }
+                    }, i * this.state.sortingSpeed);
+                    // clear timeout if bars are undefined (component is unmounted)
+                    if (barOne === undefined || barTwo === undefined){
+                        clearTimeout(t);
+                    }
+                }
+
+            }
+        }
     }
 
     // sorting helper method

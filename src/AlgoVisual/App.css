@@ -124,6 +124,11 @@ html, body {
     padding: 10px 0;
 }
 
+.markdown img {
+    width: 100%;
+    padding: 10px 0;
+}
+
 .sections-wrapper {
     background-color: #dce2ef;
     padding: 20px;

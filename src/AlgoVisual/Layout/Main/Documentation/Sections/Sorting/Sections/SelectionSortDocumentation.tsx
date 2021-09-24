@@ -1,18 +1,19 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import {linkedlistMarkdown} from "../../../Markdown/Markdown";
+import {selectionSortMarkdown} from "../../Markdown/Markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
 import themeStyle from "react-syntax-highlighter/dist/esm/styles/prism/nord";
+import {MathComponent} from "mathjax-react";
 
 type Props = {
     section: React.RefObject<HTMLDivElement>
 };
-
 type State = {};
-class ArrayListDocumentation extends React.Component<Props, State>{
-    constructor(props:Props) {
+
+class SelectionSortDocumentation extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
     }
 
@@ -34,10 +35,17 @@ class ArrayListDocumentation extends React.Component<Props, State>{
                 <div className={"markdown-wrapper"}>
                     <div className={"markdown"}>
                         <ReactMarkdown
-                            children={linkedlistMarkdown}
+                            children={selectionSortMarkdown}
                             remarkPlugins={[[remarkGfm], [remarkBreaks]]}
                             components={{
                                 a: ({...props}) => <a target={"_blank"} {...props} />,
+                                em: ({...props}) => {
+                                    if (props.children[0] && typeof props.children[0] === 'string' && props.children[0].startsWith('$')) {
+                                        return <MathComponent tex={String(props.children[0].substring(1))}
+                                                              display={false}> </MathComponent>
+                                    }
+                                    return <i {...props}/>
+                                },
                                 code({inline, className, children, ...props}) {
                                     const match = /language-(\w+)/.exec(className || "");
                                     return !inline && match ? (
@@ -64,4 +72,4 @@ class ArrayListDocumentation extends React.Component<Props, State>{
     }
 }
 
-export default ArrayListDocumentation;
+export default SelectionSortDocumentation;

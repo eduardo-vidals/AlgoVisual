@@ -18,10 +18,31 @@ This part of the page will go over the implementations of the algorithms and dat
 - [Front End Development Libraries by freeCodeCamp](https://www.freecodecamp.org/learn/front-end-development-libraries)
 `
 
+// data structures markdown
 export let datastructuresMarkdown = `
 # Data Structures
-This part of the page will go over many relevant data strucures that are implemented throughout the site. 
+This part of the page will go over the many relevant data strucures that are implemented throughout the site. 
 `
+
+export let timeComplexityMarkdown = `
+# Time Complexity
+This section will go over time complexity.
+
+## Brief Explanation
+Time complexity can be defined as the **asymptomatic** behavior of the graph. In simpler terms, as the size of the function gets progressively larger, we can put functions in the same asymptomatic category. For example, let's say we have the following functions: *$f(x) = 100n* and *$g(x) = n*. As *$n* gets larger, both functions become categorized under the same asymptomatic bound because the difference becomes negligible as *$n* gets larger. 
+
+## Big-O Notation
+To categorize the asymptomatic bound of an algorithm, we use Big-O notation. For example, Bubble Sort has a **worst-case** of *$O(n^2)*, which is pronounced as "Big O of *$n^2*." This algorithm will be explained in the sorting section of the documentation page.  
+
+## Graph Representation
+Here is a representation of the asymptomatic bounds used when regarding data structures and algorithms. 
+![Time Complexity Graph](https://he-s3.s3.amazonaws.com/media/uploads/ece920b.png)
+
+## Importance
+Time complexity is an important concept to grasp right away, as we will be analyzing the time complexity of the data structures and algorithms that will be implemented throughout the site. Click below to go to the next section. 
+`
+
+
 export let arraylistMarkdown = `
 # ArrayList in Java
 This section will go over a simple implementation of ArrayList.
@@ -83,7 +104,8 @@ public void add(E item){
     arr[n++] = item;
 }
 
-public void remove(int index){
+public E remove(int index){
+    E removed = arr[index];
     int numMoved = n - index - i; // numOfNumbers that need to be moved
     System.arraycopy(arr, index + 1, arr, index, numMoved); // shifts elements to left by 1
     arr[n--] = null; // decrement size and ensure last arr value is null 
@@ -92,8 +114,10 @@ public void remove(int index){
     if (n > 0 && n == arr.length / 4){
         resize(arr.length / 2);
     }
+    return removed;
 }
 \`\`\`
+
 ### Iterator
 As a reminder, remember to implement the Iterator interface and implement the following methods: 
 - hasNext()
@@ -146,7 +170,7 @@ export let linkedlistMarkdown = `
 This section will go over a simple implementation of ArrayList.
 
 ## Objects & Classes
-There is sometimes confusion when linked lists are introduced due to not understanding the concept of objects and classes. Therefore, it is important that you understand the idea of having a **inner** class within a class. The idea of a linked list is that an inner class can essentially act as a *pointer* that keeps track of **previous** and **next** nodes. This idea is explained in the image below. 
+There is sometimes confusion when linked lists are introduced due to not understanding the concept of objects and classes. Therefore, it is important that you understand the idea of having a **inner** class within a class. The idea of a Linked List is that an inner class can essentially act as a *pointer* that keeps track of **previous** and **next** nodes. This idea is explained in the image below. 
 
 [TO DO IMAGE]
 
@@ -235,7 +259,7 @@ public E removeLast(){
 \`\`\`
 
 ### Queues (LIFO)
-Let's introduce the concept of a **queue** as it serves as an important concept in computer science. A **queue** data structure works as **First In, First Out (FIFO).** An analogy for a queue is to imagine being the first person in line for Subway, eventually, you will be the first one out of line and will go on your day to enjoy your subway! This concept is easily explained by the image below. 
+Let's introduce the concept of a **queue** as it serves as an important concept in computer science. A **queue** data structure works as **First In, First Out (FIFO).** An analogy for a queue is to imagine being the first person in line for Subway, eventually, you will be the first one out of line and will go about your day and enjoy your subway sandwich! This concept is easily explained by the image below. 
 
 [TO DO IMAGE]
 
@@ -348,4 +372,390 @@ The **remove()** method might be a bit hard to understand so images will be prov
 
 ## Visualizer
 ...And that's it! Our implementation of a LinkedList should be working just fine. Remember, there is also a visualization tool of how the pointers operate in a LinkedList. Click the button below to check out the visualizer!
+`
+
+// sorting markdown
+export let sortingMarkdown = `
+# Sorting Algorithms
+This part of the page will go over the many relevant sorting algorithms that are implemented throughout the site. 
+`
+
+export let bubbleSortMarkdown = `
+# Bubble Sort
+This section will go over an implementation of Bubble Sort.
+
+## Bubble Sort Implementation
+We will be using generics for our implementation to easily apply our sorting algorithm across all types of arrays.
+
+### Rationale
+The basis of Bubble Sort is to swap elements if the current element is greater than the element ahead.
+
+### Helper Method
+We will be using the following **swap()** helper method to swap values from the array.
+\`\`\`java
+private static <E> void swap(E[] arr, int i, int j){
+    E temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+\`\`\`
+
+### Sorting Algorithm
+This is the setup used for Bubble Sort.
+
+\`\`\`java
+// <E extends Comparable> just means that E (the data type of the array) must
+// implement the Comparable interface, <? super E> means that E itself or the
+// super class can implement Comparable
+public static <E extends Comparable<? super E>> void sort(E[] arr) {
+    for (int i = 0; i < arr.length - 1; i++) {
+        for (int j = 0; j < arr.length - 1 - i; j++) {
+            // compare elements from indices j and j + 1, swap if j > j + 1
+            if (arr[j].compareTo(arr[j + 1]) > 0){
+                swap(arr, j, j + 1);
+            }
+        }
+    }
+}
+\`\`\`
+
+## Time Complexity (Analysis)
+Bubble Sort is a **stable** sorting algorithm but it is often regarded as the **worst** sorting algorithm.
+- The best case can be *$O(n)*, but this implementation has a best case of *$O(n^2)*
+- The average case is *$O(n^2)*
+- The worst case is *$O(n^2)*
+
+
+## Visualizer
+...And that's it! Our implementation of Bubble Sort should be working just fine. Remember, there is also a simple visualization tool for sorting algorithms. Click the button below to check out the visualizer!
+`
+
+export let insertionSortMarkdown = `
+# Insertion Sort
+This section will go over an implementation of Insertion Sort.
+
+## Insertion Sort Implementation 
+We will be using generics for our implementation to easily apply our sorting algorithm across all types of arrays.
+
+### Rationale
+The basis of Insertion Sort is to swap until there isn't an element greater than the key. This process starts with index one as the key and progressively increments until the array is fully sorted.
+
+### Sorting Algorithm
+\`\`\`java
+public static void <E extends Comparable<? super E>> sort(E[] arr){
+    for (int i = 1; i < arr.length; i++){
+        // keep track of the key for the last swap
+        T key = arr[i];
+        // starting index will always be one below i
+        int j = i - 1;
+        // if the val to the left is bigger, then replace it
+        while(j >= 0 && arr[j].compareTo(key) > 0){
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        // we can replace arr[j + 1] with the key since that is the last swap we need to do
+        arr[j + 1] = key;
+    }
+}
+\`\`\`
+
+## Time Complexity (Analysis)
+Insertion Sort is a **stable** sorting algorithm and better than Bubble Sort. However, the worst case is still *$O(n^2)*
+- The best case is *$O(n)*
+- The average case is *$O(n^2)*
+- The worst case is *$O(n^2)*
+
+## Visualizer
+...And that's it! Our implementation of Bubble Sort should be working just fine. Remember, there is also a simple visualization tool for sorting algorithms. Click the button below to check out the visualizer!
+`
+
+export let selectionSortMarkdown = `
+# Selection Sort
+This section will go over an implementation of Selection Sort.
+
+## Insertion Sort Implementation
+We will be using generics for our implementation to easily apply our sorting algorithm across all types of arrays.
+
+### Rationale
+The basis of Selection Sort is to find the minimum element in the array and replace it with the current index of the outer loop. The inner loop start index increments after each iteration in the outer loop. (This allows us to ignore already sorted elements.)
+
+### Helper Method
+We will be using the following **swap()** helper method to swap values from the array.
+\`\`\`java
+public static <E> void swap(E[] arr, int i, int j){
+    E temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+\`\`\`
+
+### Sorting Algorithm
+This is the setup used for Selection Sort. 
+
+\`\`\`java
+public static <E extends Comparable<? super E> sort(E[] arr){
+    for (int i = 0; i < arr.length; i++){
+        // get min value and its index (we're only aware of 1 value so this is our min)
+        T min = arr[i];
+        int minIndex = i;
+        // start loop from i since any previous element will already be sorted
+        for (int j = i; j < arr.length; j++){
+            // if there's a new min, then update it
+            if (min.compareTo(arr[j] > 0){
+                min = arr[j];
+                minIndex = j;
+            }
+        }
+        // once you're at the end of the loop, swap the index of the smallest element with i 
+        // this will put the lowest element at the start of our array
+        swap(arr, i, minIndex);
+    }
+}
+\`\`\`
+
+## Time Complexity (Analysis)
+Selection Sort is an **unstable** sorting algorithm and better than Bubble Sort. However, the worst case is still *$O(n^2)*
+- The best case is *$O(n^2)*
+- The average case is *$O(n^2)*
+- The worst case is *$O(n^2)*
+
+## Visualizer
+...And that's it! Our implementation of Insertion Sort should be working just fine. Remember, there is also a simple visualization tool for sorting algorithms. Click the button below to check out the visualizer!
+`
+
+export let mergeSortMarkdown = `
+# Merge Sort
+This section will go over **two** versions of Merge Sort because it will show us the importance in creating efficient algorithms. 
+
+## Merge Sort Implementation (Version 1)
+We will be using generics for our implementation to easily apply our sorting algorithm across all types of arrays.
+
+### Rationale
+The basis of Merge Sort is to think of one element by itself already being **sorted**. If we have **two elements** and **merge** them, then we will have 2 elements sorted. To accomplish this we recursively call the sorting method until we only have one element. Eventually, the recursive function will be at a point where we have **two** elements. Ultimately, we use the merge function for these pair of elements and this process continues until the array is fully sorted.
+
+### Helper Method
+We will be using the following **merge()** helper method to **merge** two arrays that are **already sorted.**
+\`\`\`java
+private static <E extends Comparable<? super E> void merge(E[] arr, int l, int m, int r){
+    int nL = m - l + 1; // size of left aux array
+    int nR = r - m; // size of right aux array
+    
+    E[] L = (E[]) new Comparable[nL];
+    E[] R = (E[]) new Comparable[nR];
+   
+    // initialize left aux array with the values from the main array
+    for (int i = 0; i < nL; i++){
+        L[i] = arr[l + i];
+    }
+    
+    // initialize right aux array with the values from the main array
+    for (int j = 0; j < nR; j++){
+        R[j] = arr[m + j + 1];
+    }
+    
+    int i = 0; // starting index of left aux arr
+    int j = 0; // starting index of right aux arr
+    int k = l; // starting index of main arr
+    
+    while (i < nL && j < nR){
+        // compare values from both aux arrays, determine which element is lower, then update
+        // the main arr with the lowest value, then increment indices as needed
+        if (L[i].compareTo(R[j]) <= 0){
+            arr[k] = L[i++]
+        } else {
+            arr[k] = R[j++];
+        }
+        k++;
+    }
+    
+    // update main arr with remaining elements from the left aux arr
+    while (i < nL){
+        arr[k] = L[i++];
+        k++;
+    }
+    
+    // update main arr with remaining elements from the right aux arr
+    while (j < nR){
+        arr[k] = R[j++];
+        k++;
+    }
+}
+\`\`\`
+
+### Sorting Algorithm
+This is the setup used for Merge Sort. 
+
+\`\`\`java
+public static <E extends Comparable<? super E> void sort(E[] arr){
+    sort(arr, 0, arr.length - 1);
+}
+private static <E extends Comparable<? super E> void sort(E[] arr, int l, int r){ 
+    if (l < r){
+        int m = (l + r)/2; // middle index
+        sort(arr, l, m); // left side of array
+        sort(arr, m + 1, r); // right side of array
+        merge(arr, l, m, r); // merge
+    }
+}
+\`\`\`
+
+### Time Complexity & Space Complexity (Analysis)
+Merge Sort is a **stable** sorting algorithm and it is the first efficient sorting algorithm that will be covered.
+- The best case is *$O(nlogn)*
+- The average case is *$O(nlogn)*
+- The worst case is *$O(nlogn)*
+
+It also uses an **auxilary** array in **merge()**, as a result, this algorithm has a space complexity of *$O(n).*
+
+## Merge Sort Implementation (Version 2)
+This second version of Merge Sort will be more efficient than the previous one. It will only be creating the auxilary array **once** instead of creating multiple auxilary arrays as in the previous implementation. Therefore, this version of Merge Sort is more efficient.
+
+### Sort Method
+This will be the updated version of **sort()** that only relies on one auxilary array.
+\`\`\`java
+public static <E extends Comparable<? super E>> void sort(E[] arr) {
+    E[] aux = arr.clone();
+    sort(arr, 0, arr.length - 1, aux);
+}
+private static <E extends Comparable<? super E>> void sort(E[] arr, int l, int r, E[] aux) {
+    if (l < r) {
+        int m = (l + r) / 2;
+        sort(aux, l, m, arr);
+        sort(aux, m + 1, r, arr);
+        merge(arr, l, m, r, aux);
+    }
+}
+\`\`\`
+
+### Merge Method
+This will be the updated version of **merge()** that only relies on one auxilary array.
+\`\`\`java
+private static <E extends Comparable<? super E>> void merge(E[] arr, int l, int m, int r, E[] aux) {
+    int k = l, i = l;
+    int j = m + 1;
+    while (i <= m && j <= r) {
+        if (aux[i].compareTo(aux[j]) <= 0) {
+            arr[k++] = aux[i++];
+        } else {
+            arr[k++] = aux[j++];
+        }
+    }
+    while (i <= m) {
+        arr[k++] = aux[i++];
+    }
+    while (j <= r) {
+        arr[k++] = aux[j++];
+    }
+}
+\`\`\`
+
+### Time Complexity & Space Complexity (Analysis)
+This version of Merge Sort is still a **stable** sorting algorithm.
+- The best case is *$O(nlogn)*
+- The average case is *$O(nlogn)*
+- The worst case is *$O(nlogn)*
+
+This algorithm has a space complexity of *$O(n)*, but it is more efficient as we only clone the auxilary array once. 
+
+## Visualizer
+...And that's it! Our implementation of Merge Sort should be working just fine. Remember, there is also a simple visualization tool for sorting algorithms. Click the button below to check out the visualizer!
+`
+
+export let quickSortMarkdown = `
+# Quick Sort
+This section will go over **two** versions of Quick Sort because it will show us the importance in creating efficient algorithms.
+
+## Quick Sort Implementation (Version 1)
+We will be using generics for our implementation to easily apply our sorting algorithm across all types of arrays.
+
+### Rationale
+The basis of Quick Sort is to pick an element from the list and to put all elements less than the pivot to the **left** and all elements greater the pivot to the **right.** As a result, we end up finding the **pivot**, which results in that element being **sorted.** This process is known as **partitioning** and we will be implementing it as a helper method. 
+
+### Helper Method 
+We will be using the following **swap()** and **partition()** helper method to find the **pivot.**
+\`\`\`java
+private static <E extends Comparable<? super E>> int partition(E[] arr, int l, int h){
+    E pivot = arr[l]; // we will be using the lowest element given as the pivot
+    int i = l - 1; // start index
+    int j = h + 1; // end index
+    while (true){
+        // increment i every time arr[i] is less than the value of the pivot
+        do {
+            i++;
+        } while(arr[i].compareTo(pivot) < 0);
+    
+        // increment j every time arr[j] is greater than the pivot
+        do {
+            j--;
+        } while(arr[j].compareTo(pivot) > 0);
+
+        // return pivot index once i >= j
+        if (i >= j){
+            return j;
+        }
+        
+        // swap once you find a value less than pivot and a value greater than pivot
+        swap(arr, i, j);
+    }
+}
+
+private static <E> void swap(E[] arr, int i, int j){
+    E temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+\`\`\`
+
+
+### Sorting Algorithm
+This is the setup used for Quick Sort. 
+
+\`\`\`java
+public static <E extends Comparable<? super E>> void sort(E[] arr){
+    sort(arr, 0, arr.length - 1);
+}
+
+private static <E extends Comparable<? super E>> void sort(E[] arr, int l, int h){
+    if (l < h){
+        int pivot = partition(arr, l, h);
+        sort(arr, l, pivot);
+        sort(arr, pivot + 1, h);
+    }
+}
+\`\`\`
+
+## Time Complexity (Analysis)
+Quick Sort is an **unstable** sorting algorithm. However, the worst case is *$O(n^2)*.
+- The best case is *$O(nlogn)*
+- The average case is *$O(nlogn)*
+- The worst case is *$O(n^2)*
+
+## Quick Sort Implementation (Version 2)
+This second version of Quick Sort will be more efficient as we will be using a **random** pivot within our partition() method. This essentially results into the worst case having an **extremely** low probability of occuring. Therefore, this version of Quick Sort is more efficient.
+
+### Sort Method
+The sort() method will stay the same as we only have to change the pivot that is chosen.
+
+### Partition Method
+This will be the updated version of partition() that relies on a random pivot. 
+\`\`\`java
+private static <E extends Comparable<? super E>> int partition(E[] arr, int l, int h){
+    int randomIndex = ThreadLocalRandom.current().nextInt(l, h);
+    E pivot = arr[randomIndex];
+    /* use code from previous partition() */
+}
+\`\`\`
+
+### Time Complexity & Space Complexity (Analysis)
+This version of Quick Sort is still an **unstable** sorting algorithm.
+- The best case is *$O(nlogn)*
+- The average case is *$O(nlogn)*
+- The worst case is *$O(nlogn)*
+
+## Visualizer
+...And that's it! Our implementation of Quick Sort should be working just fine. Remember, there is also a simple visualization tool for sorting algorithms. Click the button below to check out the visualizer!
+`
+
+export let heapSortMarkdown = `
+# Heap Sort
 `
