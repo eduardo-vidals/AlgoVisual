@@ -525,7 +525,7 @@ Selection Sort is an **unstable** sorting algorithm and better than Bubble Sort.
 
 export let mergeSortMarkdown = `
 # Merge Sort
-This section will go over **two** versions of Merge Sort because it will show us the importance in creating efficient algorithms. 
+This section will go over **two** versions of Merge Sort because it will show the importance in creating efficient algorithms. 
 
 ## Merge Sort Implementation (Version 1)
 We will be using generics for our implementation to easily apply our sorting algorithm across all types of arrays.
@@ -663,7 +663,7 @@ This algorithm has a space complexity of *$O(n)*, but it is more efficient as we
 
 export let quickSortMarkdown = `
 # Quick Sort
-This section will go over **two** versions of Quick Sort because it will show us the importance in creating efficient algorithms.
+This section will go over **two** versions of Quick Sort because it will show the importance in creating efficient algorithms.
 
 ## Quick Sort Implementation (Version 1)
 We will be using generics for our implementation to easily apply our sorting algorithm across all types of arrays.

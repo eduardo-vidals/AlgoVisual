@@ -44,7 +44,7 @@ class SortingVisualizer extends React.Component<Props, State> {
         this.state = {
             arr: [],
             numberOfBars: 100,
-            sortingSpeed:  20,
+            sortingSpeed:  1,
             sortingAlgorithm: "Quick Sort",
             showSortingOptions: false,
             optionsDisabled: false,
