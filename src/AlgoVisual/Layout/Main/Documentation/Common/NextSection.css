@@ -1,0 +1,4 @@
+.next-section:hover {
+    background-color: #c2cffd;
+    transition: all 150ms linear;
+}

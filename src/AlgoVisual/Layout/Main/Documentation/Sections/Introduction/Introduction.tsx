@@ -1,10 +1,6 @@
 import React from "react";
-import ReactMarkdown from "react-markdown";
-import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
-import themeStyle from 'react-syntax-highlighter/dist/esm/styles/prism/nord';
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
 import {introductionMarkdown} from "../Markdown/Markdown";
+import Markdown from "../../Common/Markdown";
 
 type Props = {
     section: React.RefObject<HTMLDivElement>
@@ -31,31 +27,9 @@ class Introduction extends React.Component<Props, State> {
     render() {
         return (
             <div className={"documentation-wrapper"}>
-                <div className={"markdown-wrapper"}>
+                <div className={"documentation"}>
                     <div className={"markdown"}>
-                        <ReactMarkdown
-                            children={introductionMarkdown}
-                            remarkPlugins={[[remarkGfm], [remarkBreaks]]}
-                            components={{
-                                a: ({...props}) => <a target={"_blank"} {...props} />,
-                                code({inline, className, children, ...props}) {
-                                    const match = /language-(\w+)/.exec(className || "");
-                                    return !inline && match ? (
-                                        <SyntaxHighlighter
-                                            children={String(children).replace(/\n$/, "")}
-                                            customStyle={{padding: "20px 30px 20px 0px"}}
-                                            style={themeStyle}
-                                            showLineNumbers={true}
-                                            language={match[1]}
-                                            PreTag="div"
-                                        />
-                                    ) : (
-                                        <code className={className} {...props}>
-                                            {children}
-                                        </code>
-                                    );
-                                }
-                            }}/>
+                        <Markdown markdown={introductionMarkdown}/>
                     </div>
                 </div>
             </div>

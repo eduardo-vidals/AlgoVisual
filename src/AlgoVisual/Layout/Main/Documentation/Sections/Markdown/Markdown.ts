@@ -9,7 +9,7 @@ This part of the page will go over the implementations of the algorithms and dat
 - This project was largely inspired by Clément Mihailescu's sorting and pathfinding visualizer.
 - The algorithm and data structure implementations are inspired by the Coursera algorithm courses offered by Princeton University under Robert Sedgewick & Kevin Wayne. 
 - Thanks to freeCodeCamp for the wonderful projects offered within their course which helped me build a solid foundation of the React framework. 
-
+- The 
 ## Respective Links
 - [Clément Mihailescu's Sorting Visualizer](https://github.com/clementmihailescu/Sorting-Visualizer)
 - [Clément Mihailescu's Pathfinding Visualizer](https://github.com/clementmihailescu/Pathfinding-Visualizer)
@@ -42,6 +42,17 @@ Here is a representation of the asymptomatic bounds used when regarding data str
 Time complexity is an important concept to grasp right away, as we will be analyzing the time complexity of the data structures and algorithms that will be implemented throughout the site. Click below to go to the next section. 
 `
 
+export let heapsMarkdown = `
+# Heaps
+`
+
+export let binarySearchTreesMarkdown = `
+# Binary Search Trees
+`
+
+export let analysisOfDataStructuresMarkdown = `
+# Analysis of Data Structures
+`
 
 export let arraylistMarkdown = `
 # ArrayList in Java
@@ -473,7 +484,7 @@ export let selectionSortMarkdown = `
 # Selection Sort
 This section will go over an implementation of Selection Sort.
 
-## Insertion Sort Implementation
+## Selection Sort Implementation
 We will be using generics for our implementation to easily apply our sorting algorithm across all types of arrays.
 
 ### Rationale
@@ -758,4 +769,8 @@ This version of Quick Sort is still an **unstable** sorting algorithm.
 
 export let heapSortMarkdown = `
 # Heap Sort
+`
+
+export let analysisOfSortingAlgorithmsMarkdown = `
+# Analysis of Sorting Algorithms
 `

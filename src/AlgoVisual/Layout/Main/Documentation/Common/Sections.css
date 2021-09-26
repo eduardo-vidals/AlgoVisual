@@ -1,0 +1,39 @@
+.sections-wrapper-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.sections-wrapper {
+    background-color: #dce2ef;
+    padding: 20px;
+    border-radius: 4px;
+    width: 400px;
+}
+
+.sections-header {
+    font-size: 20px;
+}
+
+.section-names ul {
+    margin: 0;
+    padding: 0;
+}
+
+.section-names ul li:hover {
+    background-color: #c2cffd;
+    transition: all 150ms linear;
+}
+
+.active-section{
+    background-color: #a7b9ff;
+}
+
+.active-section:hover {
+    background-color: #c2cffd;
+}
+
+@media (max-width: 500px){
+    .sections-wrapper {
+        width: 200px;
+    }
+}

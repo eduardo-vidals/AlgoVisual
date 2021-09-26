@@ -1,5 +1,4 @@
 import React from "react";
-import "./Pathfinding.css";
 
 type Props = {
     section: React.RefObject<HTMLDivElement>

@@ -1,0 +1,46 @@
+.markdown {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    word-wrap: break-word;
+    font-size: 18px;
+}
+
+.markdown > p {
+    padding: 10px 0;
+}
+
+.markdown code {
+    font-family: "Titillium Web", sans-serif;
+    font-size: 0.875rem;
+    font-weight: bold;
+}
+
+.markdown ul {
+    margin-left: 20px;
+}
+
+.markdown li {
+    padding: 3px 0;
+}
+
+.markdown li a {
+    color: #58a6ff
+}
+
+.markdown a {
+    text-decoration: none;
+}
+
+.markdown > a {
+    color: #58a6ff
+}
+
+.markdown h2 {
+    padding: 10px 0;
+}
+
+.markdown img {
+    width: 100%;
+    padding: 10px 0;
+}

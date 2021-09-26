@@ -1,18 +1,15 @@
 import React from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
-import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
-import themeStyle from "react-syntax-highlighter/dist/esm/styles/prism/nord";
 import {datastructuresMarkdown} from "../Markdown/Markdown";
-import {Link} from "react-router-dom";
-import "./DataStructures.css";
+import Sections from "../../Common/Sections";
+import Markdown from "../../Common/Markdown";
 
 
 type Props = {
     section: React.RefObject<HTMLDivElement>
 };
 type State = {};
+
+const sections = ["Time Complexity", "ArrayList", "LinkedList", "Heaps", "Binary Search Trees", "Analysis of Data Structures"];
 
 class DataStructures extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -34,69 +31,11 @@ class DataStructures extends React.Component<Props, State> {
     render() {
         return (
             <div className={"documentation-wrapper"}>
-                <div className={"markdown-wrapper"}>
+                <div className={"documentation"}>
                     <div className={"markdown"}>
-                        <ReactMarkdown
-                            children={datastructuresMarkdown}
-                            remarkPlugins={[[remarkGfm], [remarkBreaks]]}
-                            components={{
-                                a: ({...props}) => <a target={"_blank"} {...props} />,
-                                code({inline, className, children, ...props}) {
-                                    const match = /language-(\w+)/.exec(className || "");
-                                    return !inline && match ? (
-                                        <SyntaxHighlighter
-                                            children={String(children).replace(/\n$/, "")}
-                                            customStyle={{padding: "20px 30px 20px 0px"}}
-                                            style={themeStyle}
-                                            showLineNumbers={true}
-                                            language={match[1]}
-                                            PreTag="div"
-                                        />
-                                    ) : (
-                                        <code className={className} {...props}>
-                                            {children}
-                                        </code>
-                                    );
-                                }
-                            }}
-                        />
-
-                        <div className={"sections-wrapper"}>
-                            <p className={"sections-header"}> Content that will be covered: </p>
-                            <div className={"sections"}>
-                                <ul>
-                                    <Link to={"/AlgoVisual/documentation/data-structures/time-complexity"}>
-                                        <li> 1. Time Complexity</li>
-                                    </Link>
-                                    <hr className={"section-break"}/>
-
-                                    <Link to={"/AlgoVisual/documentation/data-structures/array-list"}>
-                                        <li> 2. ArrayList</li>
-                                    </Link>
-                                    <hr className={"section-break"}/>
-
-                                    <Link to={"/AlgoVisual/documentation/data-structures/linked-list"}>
-                                        <li> 3. LinkedList</li>
-                                    </Link>
-                                    <hr className={"section-break"}/>
-
-                                    <Link to={"/AlgoVisual/documentation/data-structures/heaps"}>
-                                        <li> 4. Heaps</li>
-                                    </Link>
-                                    <hr className={"section-break"}/>
-
-                                    <Link to={"/AlgoVisual/documentation/data-structures/binary-search-trees"}>
-                                        <li> 5. Binary Search Trees</li>
-                                    </Link>
-                                    <hr className={"section-break"}/>
-
-                                    <Link to={"/AlgoVisual/documentation/data-structures/analysis-of-data-structures"}>
-                                        <li> 6. Analysis of Data Structures </li>
-                                    </Link>
-                                </ul>
-                            </div>
-                        </div>
+                        <Markdown markdown={datastructuresMarkdown}/>
                     </div>
+                    <Sections sectionHighlight={false} sections={sections} directory={"/AlgoVisual/documentation/data-structures"}/>
                 </div>
             </div>
         )

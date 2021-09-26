@@ -78,91 +78,14 @@ html, body {
     display: flex;
     justify-content: center;
     flex: 1;
+    flex-direction: row;
 }
 
-.markdown-wrapper {
+.documentation {
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    width: 100%;
-}
-
-.markdown {
-    display: flex;
-    justify-content: center;
     flex-direction: column;
-    word-wrap: break-word;
     margin: 30px;
-    font-size: 18px;
-    width: 50vw;
-}
-
-.markdown > p {
-    padding: 10px 0;
-}
-
-.markdown code {
-    font-family: "Titillium Web", sans-serif;
-    font-size: 0.875rem;
-    font-weight: bold;
-}
-
-.markdown ul {
-    margin-left: 20px;
-}
-
-.markdown li {
-    padding: 3px 0;
-}
-
-.markdown a {
-    text-decoration: none;
-    color: #58a6ff
-}
-
-.markdown h2 {
-    padding: 10px 0;
-}
-
-.markdown img {
-    width: 100%;
-    padding: 10px 0;
-}
-
-.sections-wrapper {
-    background-color: #dce2ef;
-    padding: 20px;
-    border-radius: 4px;
-}
-
-.sections-header {
-    font-size: 20px;
-}
-
-.sections ul {
-    margin: 0;
-}
-
-.sections ul li {
-    list-style-type: none;
-    padding: 10px;
-    margin: 10px 0;
-    font-size: 15px;
-    border-radius: 10px;
-    cursor: pointer;
-    color: black;
-}
-
-
-.sections ul li:hover {
-    background-color: #cfd6ef;
-}
-
-.section-break {
-    margin: 0 13px;
-    height: 1px;
-    background-color: #c5c5c5;
-    border: none;
+    width: 800px;
 }
 
 .noselect {
@@ -172,4 +95,18 @@ html, body {
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
+}
+
+@media (max-width: 500px){
+    .sidebar {
+        width: 100px;
+    }
+
+    .section > p {
+        font-size: 10px;
+    }
+
+    .documentation {
+        width: 200px;
+    }
 }

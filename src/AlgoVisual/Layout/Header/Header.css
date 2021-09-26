@@ -106,3 +106,31 @@
         transform: scaleY(1)
     }
 }
+
+@media (max-width: 500px){
+    #name {
+        font-size: 20px;
+        padding: 5px;
+    }
+
+    #logo-wrapper {
+        margin-right: 0;
+    }
+
+    #nav-bar > ul > li {
+        font-size: 12px;
+    }
+
+    #dropdown {
+        top: 50px;
+    }
+
+    #dropdown ul li {
+        font-size: 10px;
+    }
+
+    .nav-option {
+        padding: 10px;
+        margin: 0;
+    }
+}
