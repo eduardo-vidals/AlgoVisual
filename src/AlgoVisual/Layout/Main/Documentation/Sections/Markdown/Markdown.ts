@@ -9,7 +9,7 @@ This part of the page will go over the implementations of the algorithms and dat
 - This project was largely inspired by Clément Mihailescu's sorting and pathfinding visualizer.
 - The algorithm and data structure implementations are inspired by the Coursera algorithm courses offered by Princeton University under Robert Sedgewick & Kevin Wayne. 
 - Thanks to freeCodeCamp for the wonderful projects offered within their course which helped me build a solid foundation of the React framework. 
-- The 
+
 ## Respective Links
 - [Clément Mihailescu's Sorting Visualizer](https://github.com/clementmihailescu/Sorting-Visualizer)
 - [Clément Mihailescu's Pathfinding Visualizer](https://github.com/clementmihailescu/Pathfinding-Visualizer)
