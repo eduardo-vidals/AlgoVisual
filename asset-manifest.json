@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/AlgoVisual/static/css/main.4f78dd4a.chunk.css",
-    "main.js": "/AlgoVisual/static/js/main.1b2bd580.chunk.js",
-    "main.js.map": "/AlgoVisual/static/js/main.1b2bd580.chunk.js.map",
+    "main.css": "/AlgoVisual/static/css/main.49dbd9fa.chunk.css",
+    "main.js": "/AlgoVisual/static/js/main.69865e65.chunk.js",
+    "main.js.map": "/AlgoVisual/static/js/main.69865e65.chunk.js.map",
     "runtime-main.js": "/AlgoVisual/static/js/runtime-main.e14fefe6.js",
     "runtime-main.js.map": "/AlgoVisual/static/js/runtime-main.e14fefe6.js.map",
-    "static/js/2.e9bd886b.chunk.js": "/AlgoVisual/static/js/2.e9bd886b.chunk.js",
-    "static/js/2.e9bd886b.chunk.js.map": "/AlgoVisual/static/js/2.e9bd886b.chunk.js.map",
+    "static/js/2.ed92e739.chunk.js": "/AlgoVisual/static/js/2.ed92e739.chunk.js",
+    "static/js/2.ed92e739.chunk.js.map": "/AlgoVisual/static/js/2.ed92e739.chunk.js.map",
     "static/js/3.0073f954.chunk.js": "/AlgoVisual/static/js/3.0073f954.chunk.js",
     "static/js/3.0073f954.chunk.js.map": "/AlgoVisual/static/js/3.0073f954.chunk.js.map",
     "index.html": "/AlgoVisual/index.html",
-    "static/css/main.4f78dd4a.chunk.css.map": "/AlgoVisual/static/css/main.4f78dd4a.chunk.css.map",
-    "static/js/2.e9bd886b.chunk.js.LICENSE.txt": "/AlgoVisual/static/js/2.e9bd886b.chunk.js.LICENSE.txt"
+    "static/css/main.49dbd9fa.chunk.css.map": "/AlgoVisual/static/css/main.49dbd9fa.chunk.css.map",
+    "static/js/2.ed92e739.chunk.js.LICENSE.txt": "/AlgoVisual/static/js/2.ed92e739.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.e14fefe6.js",
-    "static/js/2.e9bd886b.chunk.js",
-    "static/css/main.4f78dd4a.chunk.css",
-    "static/js/main.1b2bd580.chunk.js"
+    "static/js/2.ed92e739.chunk.js",
+    "static/css/main.49dbd9fa.chunk.css",
+    "static/js/main.69865e65.chunk.js"
   ]
 }
