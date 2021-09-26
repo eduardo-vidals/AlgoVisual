@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/AlgoVisual/static/css/main.49dbd9fa.chunk.css",
-    "main.js": "/AlgoVisual/static/js/main.69865e65.chunk.js",
-    "main.js.map": "/AlgoVisual/static/js/main.69865e65.chunk.js.map",
+    "main.css": "/AlgoVisual/static/css/main.37c223da.chunk.css",
+    "main.js": "/AlgoVisual/static/js/main.a277e6db.chunk.js",
+    "main.js.map": "/AlgoVisual/static/js/main.a277e6db.chunk.js.map",
     "runtime-main.js": "/AlgoVisual/static/js/runtime-main.e14fefe6.js",
     "runtime-main.js.map": "/AlgoVisual/static/js/runtime-main.e14fefe6.js.map",
     "static/js/2.ed92e739.chunk.js": "/AlgoVisual/static/js/2.ed92e739.chunk.js",
@@ -10,13 +10,13 @@
     "static/js/3.0073f954.chunk.js": "/AlgoVisual/static/js/3.0073f954.chunk.js",
     "static/js/3.0073f954.chunk.js.map": "/AlgoVisual/static/js/3.0073f954.chunk.js.map",
     "index.html": "/AlgoVisual/index.html",
-    "static/css/main.49dbd9fa.chunk.css.map": "/AlgoVisual/static/css/main.49dbd9fa.chunk.css.map",
+    "static/css/main.37c223da.chunk.css.map": "/AlgoVisual/static/css/main.37c223da.chunk.css.map",
     "static/js/2.ed92e739.chunk.js.LICENSE.txt": "/AlgoVisual/static/js/2.ed92e739.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.e14fefe6.js",
     "static/js/2.ed92e739.chunk.js",
-    "static/css/main.49dbd9fa.chunk.css",
-    "static/js/main.69865e65.chunk.js"
+    "static/css/main.37c223da.chunk.css",
+    "static/js/main.a277e6db.chunk.js"
   ]
 }
