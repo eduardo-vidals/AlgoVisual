@@ -11,6 +11,10 @@ type State = {};
 
 const sections = ["Time Complexity", "ArrayList", "LinkedList", "Heaps", "Binary Search Trees", "Analysis of Data Structures"];
 
+let wrapperStyle = {
+    width: "100%"
+}
+
 class DataStructures extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -35,7 +39,8 @@ class DataStructures extends React.Component<Props, State> {
                     <div className={"markdown"}>
                         <Markdown markdown={datastructuresMarkdown}/>
                     </div>
-                    <Sections sectionHighlight={false} sections={sections} directory={"/AlgoVisual/documentation/data-structures"}/>
+                    <Sections wrapperStyle={wrapperStyle} sectionHighlight={false} sections={sections}
+                              directory={"/AlgoVisual/documentation/data-structures"}/>
                 </div>
             </div>
         )

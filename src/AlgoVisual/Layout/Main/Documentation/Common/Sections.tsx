@@ -6,11 +6,13 @@ type Props = | {
     sections: string[],
     directory: string,
     sectionHighlight: false,
+    wrapperStyle?: any
 } | {
     sections: string[],
     directory: string,
     sectionHighlight: true,
-    section: number
+    section: number,
+    wrapperStyle?: any
 };
 
 type State = {};
@@ -67,7 +69,7 @@ class Sections extends React.Component<Props, State> {
 
         return (
             <div className={"sections-wrapper-wrapper"}>
-                <div className={"sections-wrapper"}>
+                <div className={"sections-wrapper"} style={this.props.wrapperStyle}>
                     <div className={"sections"}>
                         <p className={"sections-header"}> In this part: </p>
                         <div className={"section-names"}>

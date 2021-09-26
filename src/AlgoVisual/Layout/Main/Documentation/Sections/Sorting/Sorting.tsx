@@ -9,6 +9,9 @@ type Props = {
 type State = {};
 
 const sections = ["Bubble Sort", "Insertion Sort", "Selection Sort", "Merge Sort", "Quick Sort", "Heap Sort", "Analysis of Sorting Algorithms"]
+let wrapperStyle = {
+    width: "100%"
+}
 
 class Sorting extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -34,7 +37,8 @@ class Sorting extends React.Component<Props, State> {
                     <div className={"markdown"}>
                         <Markdown markdown={sortingMarkdown}/>
                     </div>
-                    <Sections sections={sections} directory={"/AlgoVisual/documentation/sorting"} sectionHighlight={false}/>
+                    <Sections wrapperStyle={wrapperStyle} sections={sections}
+                              directory={"/AlgoVisual/documentation/sorting"} sectionHighlight={false}/>
                 </div>
             </div>
         )

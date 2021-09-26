@@ -26,6 +26,9 @@ const endSectionStyle = {
     margin: "20px 0"
 }
 
+let wrapperStyle = {
+    width: "400px"
+}
 
 class MarkdownPage extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -54,7 +57,7 @@ class MarkdownPage extends React.Component<Props, State> {
                     {this.props.nextSection ? <NextSection directory={this.props.nextSectionDirectory}
                                                            sectionName={this.props.nextSectionName}/> :
                         <p style={endSectionStyle}> You have reached the end of the section!</p>}
-                    <Sections sections={this.props.sections} directory={this.props.mainDirectory} sectionHighlight={true}
+                    <Sections wrapperStyle={wrapperStyle} sections={this.props.sections} directory={this.props.mainDirectory} sectionHighlight={true}
                               section={this.props.partNumber}/>
                 </div>
             </div>
