@@ -1,0 +1,24 @@
+.scroll-to-top-button {
+    position: fixed;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    animation: fadeIn 800ms ease-in-out 1s both;
+    cursor: pointer;
+}
+
+.scroll-up {
+    padding: 0 10px;
+    color: white;
+    background-color: #536b98;
+    border-radius: 10px;
+    font-size: 40px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

@@ -1,14 +1,15 @@
 import React, {createRef} from "react";
 import "./Documentation.css";
 import {Link, Route, Switch} from "react-router-dom";
-import GettingStarted from "../Sections/Introduction/Introduction";
+import Introduction from "../Sections/Introduction/Introduction";
 import DataStructures from "../Sections/DataStructures/DataStructures";
 import Sorting from "../Sections/Sorting/Sorting";
 import Pathfinding from "../Sections/Pathfinding/Pathfinding";
 import * as pageMarkdown from "../Sections/Markdown/Markdown";
-import ScrollToTop from "../Common/ScrollToTop";
+import ScrollToTopNewPage from "../Common/ScrollToTopNewPage";
 import MarkdownPage from "../Common/MarkdownPage";
 import "../Sections/Markdown/Markdown.css";
+import ScrollToTopButton from "../Common/ScrollToTopButton";
 
 type Props = {};
 type State = {
@@ -17,6 +18,8 @@ type State = {
 
 const dataStructuresSections = ["Time Complexity", "ArrayList", "LinkedList", "Heaps", "Binary Search Trees", "Analysis of Data Structures"];
 const sortingSections = ["Bubble Sort", "Insertion Sort", "Selection Sort", "Merge Sort", "Quick Sort", "Heap Sort", "Analysis of Sorting Algorithms"]
+const pathfindingSections = ["Graphs", "Depth-First Search (DFS)", "Breadth-First Search (BFS)", "Edge-Weighted Graphs",
+    "Minimum Spanning Trees (MSTs)", "Edge-Weighted Digraphs", "Shortest Paths", "Maxflow-Mincut"];
 
 class Documentation extends React.Component {
     private gettingStartedSection = createRef<HTMLDivElement>();
@@ -60,11 +63,11 @@ class Documentation extends React.Component {
                 </div>
 
                 { /* scrolls to top of page */}
-                <ScrollToTop/>
+                <ScrollToTopNewPage/>
                 <Switch>
                     {/* main documentation page */}
                     <Route exact path={"/AlgoVisual/documentation"}>
-                        <GettingStarted section={this.gettingStartedSection}/>
+                        <Introduction section={this.gettingStartedSection}/>
                     </Route>
 
                     {/* data structures and sections */}
@@ -108,7 +111,8 @@ class Documentation extends React.Component {
                     <Route exact path={"/AlgoVisual/documentation/data-structures/binary-search-trees"}>
                         <MarkdownPage mainDirectory={"/AlgoVisual/documentation/data-structures"}
                                       sections={dataStructuresSections} partNumber={5}
-                                      markdown={pageMarkdown.binarySearchTreesMarkdown} section={this.dataStructuresSection}
+                                      markdown={pageMarkdown.binarySearchTreesMarkdown}
+                                      section={this.dataStructuresSection}
                                       nextSectionDirectory={"/AlgoVisual/documentation/data-structures/analysis-of-data-structures"}
                                       nextSection={true} nextSectionName={"6. Analysis of Data Structures"}/>
                     </Route>
@@ -116,7 +120,8 @@ class Documentation extends React.Component {
                     <Route exact path={"/AlgoVisual/documentation/data-structures/analysis-of-data-structures"}>
                         <MarkdownPage mainDirectory={"/AlgoVisual/documentation/data-structures"}
                                       sections={dataStructuresSections} partNumber={6}
-                                      markdown={pageMarkdown.analysisOfDataStructuresMarkdown} section={this.dataStructuresSection}
+                                      markdown={pageMarkdown.analysisOfDataStructuresMarkdown}
+                                      section={this.dataStructuresSection}
                                       nextSection={false}/>
                     </Route>
 
@@ -184,7 +189,73 @@ class Documentation extends React.Component {
                     <Route exact path={"/AlgoVisual/documentation/pathfinding"}>
                         <Pathfinding section={this.pathfindingSection}/>
                     </Route>
+
+                    <Route exact path={"/AlgoVisual/documentation/pathfinding/graphs"}>
+                        <MarkdownPage mainDirectory={"/AlgoVisual/documentation/pathfinding"}
+                                      sections={pathfindingSections} partNumber={1}
+                                      markdown={pageMarkdown.graphsMarkdown} section={this.pathfindingSection}
+                                      nextSection={true} nextSectionName={"2. Depth-First Search (DFS)"}
+                                      nextSectionDirectory={"/AlgoVisual/documentation/pathfinding/depth-first-search"}/>
+
+                    </Route>
+
+                    <Route exact path={"/AlgoVisual/documentation/pathfinding/depth-first-search"}>
+                        <MarkdownPage mainDirectory={"/AlgoVisual/documentation/pathfinding"}
+                                      sections={pathfindingSections} partNumber={2}
+                                      markdown={pageMarkdown.dfsMarkdown} section={this.pathfindingSection}
+                                      nextSection={true} nextSectionName={"3. Breadth-First Search (BFS)"}
+                                      nextSectionDirectory={"/AlgoVisual/documentation/pathfinding/breadth-first-search"}/>
+                    </Route>
+
+                    <Route exact path={"/AlgoVisual/documentation/pathfinding/breadth-first-search"}>
+                        <MarkdownPage mainDirectory={"/AlgoVisual/documentation/pathfinding"}
+                                      sections={pathfindingSections} partNumber={3}
+                                      markdown={pageMarkdown.bfsMarkdown} section={this.pathfindingSection}
+                                      nextSection={true} nextSectionName={"4. Edge-Weighted Graphs"}
+                                      nextSectionDirectory={"/AlgoVisual/documentation/pathfinding/edge-weighted-graphs"}/>
+                    </Route>
+
+                    <Route exact path={"/AlgoVisual/documentation/pathfinding/edge-weighted-graphs"}>
+                        <MarkdownPage mainDirectory={"/AlgoVisual/documentation/pathfinding"}
+                                      sections={pathfindingSections} partNumber={4}
+                                      markdown={pageMarkdown.edgeWeightedGraphsMarkdown} section={this.pathfindingSection}
+                                      nextSection={true} nextSectionName={"5. Minimum Spanning Trees"}
+                                      nextSectionDirectory={"/AlgoVisual/documentation/pathfinding/minimum-spanning-trees"}/>
+                    </Route>
+
+                    <Route exact path={"/AlgoVisual/documentation/pathfinding/minimum-spanning-trees"}>
+                        <MarkdownPage mainDirectory={"/AlgoVisual/documentation/pathfinding"}
+                                      sections={pathfindingSections} partNumber={5}
+                                      markdown={pageMarkdown.mstsMarkdown} section={this.pathfindingSection}
+                                      nextSection={true} nextSectionName={"6. Edge-Weighted Digraphs"}
+                                      nextSectionDirectory={"/AlgoVisual/documentation/pathfinding/edge-weighted-digraphs"}/>
+                    </Route>
+
+                    <Route exact path={"/AlgoVisual/documentation/pathfinding/edge-weighted-digraphs"}>
+                        <MarkdownPage mainDirectory={"/AlgoVisual/documentation/pathfinding"}
+                                      sections={pathfindingSections} partNumber={6}
+                                      markdown={pageMarkdown.edgeWeightedDigraphsMarkdown} section={this.pathfindingSection}
+                                      nextSection={true} nextSectionName={"7. Shortest Paths"}
+                                      nextSectionDirectory={"/AlgoVisual/documentation/pathfinding/shortest-paths"}/>
+                    </Route>
+
+                    <Route exact path={"/AlgoVisual/documentation/pathfinding/shortest-paths"}>
+                        <MarkdownPage mainDirectory={"/AlgoVisual/documentation/pathfinding"}
+                                      sections={pathfindingSections} partNumber={7}
+                                      markdown={pageMarkdown.shortestPathsMarkdown} section={this.pathfindingSection}
+                                      nextSection={true} nextSectionName={"8. Maxflow-Mincut"}
+                                      nextSectionDirectory={"/AlgoVisual/documentation/pathfinding/maxflow-mincut"}/>
+                    </Route>
+
+                    <Route exact path={"/AlgoVisual/documentation/pathfinding/maxflow-mincut"}>
+                        <MarkdownPage mainDirectory={"/AlgoVisual/documentation/pathfinding"}
+                                      sections={pathfindingSections} partNumber={7}
+                                      markdown={pageMarkdown.maxFlowMinCutMarkdown} section={this.pathfindingSection}
+                                      nextSection={false}/>
+                    </Route>
                 </Switch>
+
+                <ScrollToTopButton/>
             </main>
         )
     }

@@ -2,12 +2,11 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
-    word-wrap: break-word;
     font-size: 18px;
 }
 
-.markdown > p {
-    padding: 10px 0;
+.markdown p {
+    padding: 5px 0;
 }
 
 .markdown code {
@@ -30,17 +29,15 @@
 
 .markdown a {
     text-decoration: none;
-}
-
-.markdown > a {
     color: #58a6ff
 }
 
-.markdown h2 {
+.markdown h1, .markdown h2, .markdown h3 {
     padding: 10px 0;
 }
 
 .markdown img {
-    width: 100%;
+    display: flex;
+    margin: 0 auto;
     padding: 10px 0;
 }

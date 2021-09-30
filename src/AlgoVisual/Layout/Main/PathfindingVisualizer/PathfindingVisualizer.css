@@ -1,0 +1,8 @@
+#pathfinding-visualizer {
+    margin: 40px;
+}
+
+.grid-row {
+    display: flex;
+    flex-direction: row;
+}

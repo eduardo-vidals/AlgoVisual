@@ -44,7 +44,7 @@ class SortingVisualizer extends React.Component<Props, State> {
         this.state = {
             arr: [],
             numberOfBars: 100,
-            sortingSpeed:  1,
+            sortingSpeed: 1,
             sortingAlgorithm: "Quick Sort",
             showSortingOptions: false,
             optionsDisabled: false,
@@ -64,7 +64,7 @@ class SortingVisualizer extends React.Component<Props, State> {
                 '& .MuiSlider-valueLabel': {
                     display: "none"
                 }
-            } as const,
+            },
             keepTimeout: true
         };
         this.resetArray = this.resetArray.bind(this);
@@ -90,12 +90,13 @@ class SortingVisualizer extends React.Component<Props, State> {
     }
 
     resetArray() {
-        // resize the array based on
-        if (!this.state.optionsDisabled){
+        // resize the array based on height of screen
+        if (!this.state.optionsDisabled) {
             let screenHeight = document.getElementById("app-wrapper")!.clientHeight;
             let headerHeight = document.getElementById("header")!.clientHeight;
             let footerHeight = document.getElementById("footer")!.clientHeight;
             let containerHeight = screenHeight - headerHeight - footerHeight;
+            containerHeight = containerHeight < 600 ? footerHeight * 8 : containerHeight < 200 ? 1 : containerHeight;
             let maxBarHeight = containerHeight - 100;
             const arr = [];
             for (let i = 0; i < this.state.numberOfBars; i++) {
@@ -215,7 +216,7 @@ class SortingVisualizer extends React.Component<Props, State> {
 
     quickSort() {
         let animations = getQuickSortAnimations(this.state.arr);
-        this.sortTest(animations);
+        this.quickSortAnimations(animations);
     }
 
     heapSort() {
@@ -223,7 +224,7 @@ class SortingVisualizer extends React.Component<Props, State> {
         this.sort(animations, 3);
     }
 
-    sortTest(animations: [number, number, string, string][]){
+    quickSortAnimations(animations: [number, number, string, string][]) {
         let animationLength = animations.length * this.state.sortingSpeed;
         this.enableSettings(animationLength);
         for (let i = 0; i < animations.length; i++) {
@@ -244,7 +245,7 @@ class SortingVisualizer extends React.Component<Props, State> {
                         }
                     }, i * this.state.sortingSpeed);
                     // clear timeout if bars are undefined (component is unmounted)
-                    if (barOne === undefined || barTwo === undefined){
+                    if (barOne === undefined || barTwo === undefined) {
                         clearTimeout(t);
                     }
                 } else if (animationType === 'swap') {
@@ -257,10 +258,10 @@ class SortingVisualizer extends React.Component<Props, State> {
                         }
                     }, i * this.state.sortingSpeed);
                     // clear timeout if bars are undefined (component is unmounted)
-                    if (barOne === undefined){
+                    if (barOne === undefined) {
                         clearTimeout(t);
                     }
-                }else if (animationType === 'pivot') {
+                } else if (animationType === 'pivot') {
                     let [barOneIdx, barTwoIdx] = animations[i];
                     let barOne = arrayBars[barOneIdx] as HTMLElement;
                     let barTwo = arrayBars[barTwoIdx] as HTMLElement;
@@ -274,7 +275,7 @@ class SortingVisualizer extends React.Component<Props, State> {
                         }
                     }, i * this.state.sortingSpeed);
                     // clear timeout if bars are undefined (component is unmounted)
-                    if (barOne === undefined || barTwo === undefined){
+                    if (barOne === undefined || barTwo === undefined) {
                         clearTimeout(t);
                     }
                 }
@@ -305,7 +306,7 @@ class SortingVisualizer extends React.Component<Props, State> {
                         }
                     }, i * this.state.sortingSpeed);
                     // clear timeout if bars are undefined (component is unmounted)
-                    if (barOne === undefined || barTwo === undefined){
+                    if (barOne === undefined || barTwo === undefined) {
                         clearTimeout(t);
                     }
                 } else {
@@ -318,7 +319,7 @@ class SortingVisualizer extends React.Component<Props, State> {
                         }
                     }, i * this.state.sortingSpeed);
                     // clear timeout if bars are undefined (component is unmounted)
-                    if (barOne === undefined){
+                    if (barOne === undefined) {
                         clearTimeout(t);
                     }
                 }
@@ -357,7 +358,7 @@ class SortingVisualizer extends React.Component<Props, State> {
             button.style.cursor = "revert";
         }
 
-        this.setState((state) => ({
+        this.setState({
             sliderStyle: {
                 '& .MuiSlider-thumb': {
                     bgcolor: "#f5a0a0",
@@ -366,7 +367,7 @@ class SortingVisualizer extends React.Component<Props, State> {
                     },
                 },
             } as const
-        }));
+        });
     }
 
     // enable settings once the the animation is over
@@ -411,65 +412,69 @@ class SortingVisualizer extends React.Component<Props, State> {
 
         return (
             <main className="main-sidebar">
-                <div className={"sidebar"}>
-                    <div className={"sidebar-settings"}>
-                        <div className={"sidebar-setting"}>
-                            <p> Control number of bars </p>
-                            <p> {this.state.numberOfBars} bars </p>
-                            <Slider sx={this.state.sliderStyle} disabled={this.state.optionsDisabled} min={10}
-                                    onChange={this.numberOfBars} max={250} defaultValue={100} valueLabelDisplay="auto"/>
-                        </div>
-
-                        <div className={"sidebar-setting"}>
-                            <p> Control visualizer speed </p>
-                            <p> {this.state.sortingSpeed} ms </p>
-                            <Slider sx={this.state.sliderStyle} disabled={this.state.optionsDisabled} min={1}
-                                    onChange={this.sliderSpeed} max={100} defaultValue={1} valueLabelDisplay="auto"/>
-                        </div>
-
-                        <div className={"sidebar-setting"}>
-                            <p> Choose an algorithm </p>
-
-                            <div className={"selection-dropdown"} onClick={this.showSortingAlgorithms}>
-                                <div className={"current-option"}>
-                                    <p> {this.state.sortingAlgorithm} </p>
-                                </div>
-
-                                <div className={"caret-down"}>
-                                    <i className="fas fa-caret-down" ref={this.dropdownCaret}> </i>
-                                </div>
-                            </div>
-                            <div className={"selection-options"} ref={this.dropdownSelection}>
-                                <ul>
-                                    {
-                                        options.map(option => (
-                                            <div onClick={() => this.changeAlgorithm(option)}
-                                                 key={option}> {option} </div>
-                                        ))
-                                    }
-                                </ul>
+                <div className={"sidebar-wrapper"}>
+                    <div className={"sidebar"}>
+                        <div className={"sidebar-settings"}>
+                            <div className={"sidebar-setting"}>
+                                <p> Control number of bars </p>
+                                <p> {this.state.numberOfBars} bars </p>
+                                <Slider sx={this.state.sliderStyle} disabled={this.state.optionsDisabled} min={10}
+                                        onChange={this.numberOfBars} max={250} defaultValue={100}
+                                        valueLabelDisplay="auto"/>
                             </div>
 
-                            <button disabled={this.state.optionsDisabled} className={"sidebar-button"}
-                                    onClick={this.runSortingAlgorithm}
-                                    onMouseEnter={this.buttonEnter} onMouseLeave={this.buttonLeave}
-                                    ref={this.runButton}> Run
-                            </button>
-                        </div>
+                            <div className={"sidebar-setting"}>
+                                <p> Control visualizer speed </p>
+                                <p> {this.state.sortingSpeed} ms </p>
+                                <Slider sx={this.state.sliderStyle} disabled={this.state.optionsDisabled} min={1}
+                                        onChange={this.sliderSpeed} max={100} defaultValue={1}
+                                        valueLabelDisplay="auto"/>
+                            </div>
 
-                        <div className={"sidebar-setting"}>
-                            <p> Reset the array </p>
-                            <button disabled={this.state.optionsDisabled} className={"sidebar-button"}
-                                    onClick={this.resetArray}
-                                    onMouseEnter={this.buttonEnter} onMouseLeave={this.buttonLeave}
-                                    ref={this.resetButton}> Reset
-                            </button>
+                            <div className={"sidebar-setting"}>
+                                <p> Choose an algorithm </p>
+
+                                <div className={"selection-dropdown"} onClick={this.showSortingAlgorithms}>
+                                    <div className={"current-option"}>
+                                        <p> {this.state.sortingAlgorithm} </p>
+                                    </div>
+
+                                    <div className={"caret-down"}>
+                                        <i className="fas fa-caret-down" ref={this.dropdownCaret}> </i>
+                                    </div>
+                                </div>
+                                <div className={"selection-options"} ref={this.dropdownSelection}>
+                                    <ul>
+                                        {
+                                            options.map(option => (
+                                                <div onClick={() => this.changeAlgorithm(option)}
+                                                     key={option}> {option} </div>
+                                            ))
+                                        }
+                                    </ul>
+                                </div>
+
+                                <button disabled={this.state.optionsDisabled} className={"sidebar-button"}
+                                        onClick={this.runSortingAlgorithm}
+                                        onMouseEnter={this.buttonEnter} onMouseLeave={this.buttonLeave}
+                                        ref={this.runButton}> Run
+                                </button>
+                            </div>
+
+                            <div className={"sidebar-setting"}>
+                                <p> Reset the array </p>
+                                <button disabled={this.state.optionsDisabled} className={"sidebar-button"}
+                                        onClick={this.resetArray}
+                                        onMouseEnter={this.buttonEnter} onMouseLeave={this.buttonLeave}
+                                        ref={this.resetButton}> Reset
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div id={"bars-wrapper"}>
-                    <div id={"bars"}>
+                <div className={"main-content"}>
+                    <div id={"sorting-visualizer"}>
                         {bars}
                     </div>
                 </div>

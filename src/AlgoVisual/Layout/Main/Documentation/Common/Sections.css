@@ -30,9 +30,3 @@
 .active-section:hover {
     background-color: #c2cffd;
 }
-
-@media (max-width: 500px){
-    .sections-wrapper {
-        width: 200px;
-    }
-}

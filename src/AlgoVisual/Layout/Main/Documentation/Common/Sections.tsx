@@ -45,8 +45,10 @@ class Sections extends React.Component<Props, State> {
     }
 
     // turns pascal/snake case into dash seperated words (for links)
-    dashify(text: string) {
-        return text.replace(/[^a-zA-Z0-9]+/g, '-')
+    linkify(text: string) {
+        return text
+            .replace(/ *\([^)]*\) */g, "") // remove parantheses and contents
+            .replace(/[^a-zA-Z0-9]+/g, '-')
             .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
             .replace(/([a-z])([A-Z])/g, '$1-$2')
             .replace(/([0-9])([^0-9])/g, '$1-$2')
@@ -58,8 +60,8 @@ class Sections extends React.Component<Props, State> {
     render() {
         let sections = this.props.sections.map((section, index) => (
             <div>
-                <Link to={this.props.directory + "/" + this.dashify(section)} style={textDecoration}>
-                    {this.props.sectionHighlight && index === this.props.section-1 ?
+                <Link to={this.props.directory + "/" + this.linkify(section)} style={textDecoration}>
+                    {this.props.sectionHighlight && index === this.props.section - 1 ?
                         <li key={section} style={listStyle} className={"active-section"}> {++index}. {section}</li> :
                         <li key={section} style={listStyle}> {++index}. {section}</li>}
                 </Link>

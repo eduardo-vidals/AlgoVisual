@@ -37,7 +37,7 @@ class NextSection extends React.Component<Props, State> {
     render() {
         return (
             <div className={"next-section-wrapper"}>
-                <p style={endSectionStyle}> You have reacted the end of this section! Continue to the next section: </p>
+                <p style={endSectionStyle}> You have reached the end of this section! Continue to the next section: </p>
                 <Link to={this.props.directory} style={textDecoration}>
                     <div className={"next-section"} style={nextSectionStyle}>
                         <i className="fas fa-arrow-right"/>

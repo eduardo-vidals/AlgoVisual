@@ -22,6 +22,17 @@ html, body {
     height: 100%;
 }
 
+.main-content {
+    display: flex;
+    overflow: auto;
+    margin: auto;
+}
+
+.main-sidebar {
+    display: flex;
+    flex: 1;
+}
+
 .sidebar {
     width: 275px;
     background-color: #1f292e;
@@ -40,7 +51,7 @@ html, body {
 }
 
 .sidebar-setting {
-    font-size: 20px;
+    font-size: 17px;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -69,25 +80,6 @@ html, body {
     cursor: pointer;
 }
 
-.main-sidebar {
-    display: flex;
-    flex: 1;
-}
-
-.documentation-wrapper {
-    display: flex;
-    justify-content: center;
-    flex: 1;
-    flex-direction: row;
-}
-
-.documentation {
-    display: flex;
-    flex-direction: column;
-    margin: 30px;
-    width: 800px;
-}
-
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -104,9 +96,5 @@ html, body {
 
     .section > p {
         font-size: 10px;
-    }
-
-    .documentation {
-        width: 200px;
     }
 }

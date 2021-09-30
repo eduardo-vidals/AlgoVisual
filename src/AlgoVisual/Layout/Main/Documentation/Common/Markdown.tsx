@@ -9,49 +9,56 @@ import {MathComponent} from "mathjax-react";
 type Props = {
     markdown: string;
 };
+
 type State = {};
 
-class Markdown extends React.Component<Props, State>{
-    constructor(props:Props) {
+let codeStyle = {
+    padding: "10px 30px 10px 0px",
+    margin: 0,
+    overflow: "auto"
+}
+
+class Markdown extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
     }
 
     render() {
         return (
-                <ReactMarkdown
-                    children={this.props.markdown}
-                    remarkPlugins={[[remarkGfm], [remarkBreaks]]}
-                    components={{
-                        a: ({...props}) => <a target={"_blank"} {...props} />,
-                        em: ({...props}) => {
-                            if (props.children[0] && typeof props.children[0] === 'string' && props.children[0].startsWith('$')) {
-                                return (<MathComponent tex={String(props.children[0].substring(1))}
-                                                       display={false}
-                                                       setting={{"internalSpeechTitles": true}}/>)
+            <ReactMarkdown
+                children={this.props.markdown}
+                remarkPlugins={[[remarkGfm], [remarkBreaks]]}
+                components={{
+                    a: ({...props}) => <a target={"_blank"} rel={"noreferrer"} {...props} />,
+                    em: ({...props}) => {
+                        if (props.children[0] && typeof props.children[0] === 'string' && props.children[0].startsWith('$')) {
+                            return (<MathComponent tex={String(props.children[0].substring(1))}
+                                                   display={false}
+                                                   setting={{"internalSpeechTitles": true}}/>)
 
-                            }
-                            return <i {...props}/>
-                        },
-                        code({inline, className, children, ...props}) {
-                            const match = /language-(\w+)/.exec(className || "");
-                            return !inline && match ? (
-                                <SyntaxHighlighter
-                                    children={String(children).replace(/\n$/, "")}
-                                    customStyle={{padding: "20px 30px 20px 0px"}}
-                                    style={themeStyle}
-                                    showLineNumbers={true}
-                                    language={match[1]}
-                                    PreTag="div"
-                                />
-                            ) : (
-                                <code className={className} {...props}>
-                                    {children}
-                                </code>
-                            );
-                        },
+                        }
+                        return <i {...props}/>
+                    },
+                    code({inline, className, children, ...props}) {
+                        const match = /language-(\w+)/.exec(className || "");
+                        return !inline && match ? (
+                            <SyntaxHighlighter
+                                children={String(children).replace(/\n$/, "")}
+                                customStyle={codeStyle}
+                                style={themeStyle}
+                                showLineNumbers={true}
+                                language={match[1]}
+                                PreTag="div"
+                            />
+                        ) : (
+                            <code className={className} {...props}>
+                                {children}
+                            </code>
+                        );
+                    },
 
-                    }}
-                />
+                }}
+            />
         )
     }
 }

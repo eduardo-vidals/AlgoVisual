@@ -44,6 +44,18 @@ Time complexity is an important concept to grasp right away, as we will be analy
 
 export let heapsMarkdown = `
 # Heaps
+\`\`\`java
+public class ArrayList<E> implements Iterable<E> {
+    private static final int INIT_CAPACITY = 8; // initial capacity of array
+    private E[] arr; 
+    private int n; // size of array
+    
+    public ArrayList(){
+        arr = (E[]) new Object[INIT_CAPACITY]; // generic array 
+        n = 0;
+    }
+}
+\`\`\`
 `
 
 export let binarySearchTreesMarkdown = `
@@ -452,6 +464,7 @@ We will be using generics for our implementation to easily apply our sorting alg
 The basis of Insertion Sort is to swap until there isn't an element greater than the key. This process starts with index one as the key and progressively increments until the array is fully sorted.
 
 ### Sorting Algorithm
+This is the setup used for Selection Sort.
 \`\`\`java
 public static void <E extends Comparable<? super E>> sort(E[] arr){
     for (int i = 1; i < arr.length; i++){
@@ -773,4 +786,866 @@ export let heapSortMarkdown = `
 
 export let analysisOfSortingAlgorithmsMarkdown = `
 # Analysis of Sorting Algorithms
+`
+
+export let pathfindingMarkdown = `
+# Pathfinding
+This part of the page will go over the many relevant pathfinding algorithms that are implemented throughout the site.
+`
+
+export let graphsMarkdown = `
+# Graphs
+This part of the page will go over an implementation of an **undirected** graph and a **directed** graph.
+
+## Undirected Graphs Terminology
+The images below explain the terminology that will be used regarding undirected graphs.
+|   |   |   |
+|:-:|:-:|:-:|
+|![Graph Anatomy](https://algs4.cs.princeton.edu/41graph/images/graph-anatomy.png)   | ![Graph Tree](https://algs4.cs.princeton.edu/41graph/images/tree.png)| ![Graph Spanning Forest](https://algs4.cs.princeton.edu/41graph/images/forest.png) |
+
+ Image credits go to Robert Sedgewick & Kevin Wayne. Images can be obtained via their algorithms textbook [website.](https://algs4.cs.princeton.edu/41graph/)
+
+## Undirected Graph Implementation
+Keeping the last section in mind, we will be using adjacency-list representation for our implementation of a graph. We will be implementing the barebones logic of a graph. 
+
+**NOTE**: We will also be using a **Bag** data structure, it is similar to an ArrayList, **except that it does NOT support removal of elements.**
+\`\`\`java
+/*
+* Original authors:
+* @author Robert Sedgewick
+* @author Kevin Wayne
+*
+* Code can be obtained via their algorithms textbook website.
+* Website: https://algs4.cs.princeton.edu/41graph/
+*/
+public class Graph {
+    private static final String NEWLINE = System.getProperty("line.separator");
+    private final int V; // number of vertices
+    private int E; // number of edges
+    private Bag<Integer>[] adj; // adj list for vertex v
+    // initialize our instance variables
+    public Graph(int V){  
+        if (V < 0) {
+            throw new IllegalStateException();
+        }
+        this.V = V;
+        this.E = 0;
+        adj = (Bag<Integer>[]) new Bag[V]; // array of lists
+        for (int v = 0; v < V; v++){
+            adj[v] = new Bag<Integer>(); // initialize adj lists
+        }
+    }
+}
+\`\`\`
+
+### Helper Method
+We will use the following helper method to validate that our vertices are within the bounds *$[0,V - 1]*
+\`\`\`java
+private void validateVertex(int v) {
+    if (v < 0 || v >= V){
+        throw new IllegalArgumentException();
+    }
+}
+\`\`\`
+
+### Getters
+We will be using the following methods to get the number of vertices and edges.
+\`\`\`java
+public int V(){
+    return V;
+}
+
+public int E(){
+    return E;
+}
+\`\`\`
+
+### Adding Edges
+We will using the following method to add edges into our graph. Remember, this is an **undirected** graph, so both vertices **must** connect to one another. In a **directed** graph we would only add the edge from *$V \\rightarrow W*.
+\`\`\`java
+public void addEdge(int v, int w){
+    validateVertex(v);
+    validateVertex(w);
+    adj[v].add(w);
+    adj[w].add(v);
+    E++;
+}
+\`\`\`
+
+### Relevant Methods
+We will go over two important methods for graphs, **degree()** and **adj()**.
+
+### Adjacent Vertices
+We will want to get an iterable that includes all vertices adjacent to a vertex. 
+\`\`\`java
+public Iterable<Integer> adj(int v){
+    validateVertex(v);
+    return adj[v];
+}
+\`\`\`
+
+### Degree
+We will also want to know the number of vertices connected to a vertex.
+\`\`\`java
+public int degree(int v){
+    validateVertex(v);
+    return adj[v].size();
+}
+\`\`\`
+
+### String Representation
+We will use the following string representation for our graph.
+\`\`\`java
+public String toString() {
+    StringBuilder s = new StringBuilder();
+    s.append(V).append(" vertices, ").append(E).append(" edges ").append(NEWLINE);
+    for (int v = 0; v < V; v++) {
+        s.append(v).append(": ");
+        for (int w : adj[v]) {
+            s.append(w).append(" ");
+        }
+        s.append(NEWLINE);
+    }
+    return s.toString();
+}
+\`\`\`
+
+## Directed Graphs Terminology
+The images below explain the terminology that will be used regarding directed graphs.
+|   |   |   |
+|:-:|:-:|:-:|
+|![Digraph Anatomy](https://algs4.cs.princeton.edu/42digraph/images/digraph-anatomy.png)   | ![Strong Components](https://algs4.cs.princeton.edu/42digraph/images/strong-components.png)|
+
+ Image credits go to Robert Sedgewick & Kevin Wayne. Images can be obtained via their algorithms textbook [website.](https://algs4.cs.princeton.edu/41graph/)
+
+## Undirected Graph Implementation
+For the most part, an implementation of a digraph is similar to an implementation of an undirected graph, but it has a few important key differences that we will examine.
+
+**NOTE**: We will also be using a **Bag** data structure, it is similar to an ArrayList, **except that it does NOT support removal of elements.**
+\`\`\`java
+/*
+* Original authors:
+* @author Robert Sedgewick
+* @author Kevin Wayne
+*
+* Code can be obtained via their algorithms textbook website.
+* Website: https://algs4.cs.princeton.edu/41graph/
+*/
+
+public class Digraph {
+    private static final String NEWLINE = System.getProperty("line.separator");
+    
+    private final int V; // number of vertices
+    private int E; // number of edges
+    private Bag<Integer>[] adj; // adj list for vertex v
+    private int[] indegree; // indegree of vertex v
+    
+    // initialize our instance variables
+    public Digraph(int V){  
+        if (V < 0) {
+            throw new IllegalStateException();
+        }
+        this.V = V;
+        this.E = 0;
+        indegree = new int[V];
+        adj = (Bag<Integer>[]) new Bag[V]; // array of lists
+        for (int v = 0; v < V; v++){
+            adj[v] = new Bag<Integer>(); // initialize adj lists
+        }
+    }
+}
+\`\`\`
+
+### Helper Method
+We will use the following helper method to validate that our vertices are within the bounds *$[0,V - 1]*
+\`\`\`java
+private void validateVertex(int v) {
+    if (v < 0 || v >= V){
+        throw new IllegalArgumentException();
+    }
+}
+\`\`\`
+
+### Getters
+We will be using the following methods to get the number of vertices and edges.
+\`\`\`java
+public int V(){
+    return V;
+}
+
+public int E(){
+    return E;
+}
+\`\`\`
+
+### Adding Edges
+We will using the following method to add edges into our graph. In a **directed** graph we **only** add the edge from *$V \\rightarrow W*. We also update the indegree value of vertex *$W*.
+\`\`\`java
+public void addEdge(int v, int w){
+    validateVertex(v);
+    validateVertex(w);
+    adj[v].add(w);
+    indegree[w]++;
+    E++;
+}
+\`\`\`
+
+### Relevant Methods
+We will go over two important methods for graphs, **degree()** and **adj()**.
+
+### Adjacent Vertices
+We will want to get an iterable that includes all vertices adjacent to a vertex. 
+\`\`\`java
+public Iterable<Integer> adj(int v){
+    validateVertex(v);
+    return adj[v];
+}
+\`\`\`
+
+### Degree
+We will also want to know the number of vertices connected to a vertex. For digraphs we have **outdegree** and **indegree**. Outdegree is the number of edges pointing **from** it. Indegree is the number of edges pointing **to** it.
+\`\`\`java
+public int outdegree(int v){
+    validateVertex(v);
+    return adj[v].size();
+}
+
+public int indegree(int v){
+    validateVertex(v);
+    return indegree[v];
+}
+\`\`\`
+
+### String Representation
+We will use the following string representation for our digraph.
+\`\`\`java
+public String toString() {
+    StringBuilder s = new StringBuilder();
+    s.append(V).append(" vertices, ").append(E).append(" edges ").append(NEWLINE);
+    for (int v = 0; v < V; v++) {
+        s.append(v).append(": ");
+        for (int w : adj[v]) {
+            s.append(w).append(" ");
+        }
+        s.append(NEWLINE);
+    }
+    return s.toString();
+}
+\`\`\`
+
+## Visualizer
+...And that's it! Our implementation of a Graph & Digraph should be working just fine. Remember, there is also a visualization tool for visualizing a graph and digraph! Click the button below to check out the visualizer!
+
+`
+
+export let dfsMarkdown = `
+# Depth-First Search
+This part of the page will go over an implementation of Depth-First Search. 
+
+## Depth-First Search Implementation
+DFS will be the first searching algorithm that will be examined. This algorithm works on both **graphs** and **digraphs.** An easy explanation for this is that a graph is essentially a digraph that always has two edges within both directions. 
+
+### Rationale
+Depth-First Search is a recursive algorithm that recursively visits all vertices that are adjacent to it and have not been marked. An easier way to visualize this is by using the visualizer implemented in the Pathfindings section of the website.
+
+### Helper Method
+We will be using the following helper method to validate our vertices are within the bounds *$[0, V-1]*
+\`\`\`java
+private void validateVertex(int v) {
+    int V = marked.length;
+    if (v < 0 || v >= V) {
+        throw new IllegalArgumentException();
+    }
+}
+\`\`\`
+
+### Depth-First Search
+This is the setup used for DFS.
+\`\`\`java
+/*
+* Original authors:
+* @author Robert Sedgewick
+* @author Kevin Wayne
+*
+* Code can be obtained via their algorithms textbook website.
+* Website: https://algs4.cs.princeton.edu/41graph/
+*/
+public class DepthFirstSearch {
+    private boolean[] marked; // marked[v] = true iff v is reachable from s
+    private int[] edgeTo; // edgeTo[v] = last edge on path from s to v
+    private final int s; // source vertex
+    
+    // initialize instance variables and do DFS
+    public DepthFirstSearch(Digraph G, int s){
+        marked = new boolean[G.V()];
+        edgeTo = new int[G.V()];
+        this.s = s;
+        validateVertex(s);
+        dfs(G, s);
+    }
+    
+    // implementation of DFS (only a few lines of code)
+    private void dfs(Digraph G, int v){
+        marked[v] = true;
+        for (int w : G.adj(v)) {
+            if (!marked[w]){
+                edgeTo[w] = v; // last vertex that vertex w came from
+                dfs(G, w); // keep on recursively calling dfs() 
+            }
+        }
+    }
+}
+\`\`\`
+
+### Paths
+We will now focus on returning the path that DFS takes to go from *$S \\rightarrow V*. In other words, we want the path from the source to the target vertex.
+\`\`\`java
+// used to determine whether there's a path from s -> v
+public boolean hasPathTo(int v) {
+    validateVertex(v);
+    return marked[v];
+}
+
+// loop from vertex and retrace steps using edgeTo[]
+// we use a stack to return our iterable in last-first order (easy to implement)
+// ex: [1, 4, 6] would return "6 4 1" within our iterable
+public Iterable<Integer> pathTo(int v) {
+    validateVertex(v);
+    if (!hasPathTo(v)) return null;
+    Stack<Integer> path = new Stack<Integer>();
+    // keep looping until edgeTo[x] returns the source vertex
+    for (int x = v; x != s; x = edgeTo[x]){
+        path.push(x);
+    }
+    // push the source once we are done looping through our edgeTo[]
+    path.push(s);
+    return path;
+}
+\`\`\`
+
+## Visualizer
+...And that's it! Our implementation of a DFS should be working just fine. Remember, there is also a visualization tool for visualizing DFS! Click the button below to check out the visualizer!
+`
+
+export let bfsMarkdown = `
+# Breadth-First Search
+This part of the page will go over an implementation of Breadth-First Search. 
+
+## Breadth-First Search Implementation
+BFS is the second searching algorithm that will be examined. This algorithm works on both **graphs** and **digraphs.** An easy explanation for this is that a graph is essentially a digraph that always has two edges within both directions. 
+
+### Rationale
+Breadth-First Search is an algorithm that puts all vertices **adjacent** to the source vertex **in a queue.** Next, it uses the **first adjacent vertex** from the queue, **by removing it**, and puts all vertices adjacent to that vertex in the queue. This process continues until the queue is empty. An easier way to visualize this is by using the visualizer implemented in the Pathfindings section of the website.
+
+### Helper Method
+We will be using the following helper method to validate our vertices are within the bounds *$[0, V-1]*
+\`\`\`java
+private void validateVertex(int v) {
+    int V = marked.length;
+    if (v < 0 || v >= V) {
+        throw new IllegalArgumentException();
+    }
+}
+\`\`\`
+
+### Breadth-First Search
+This is the setup used for BFS.
+\`\`\`java
+/*
+* Original authors:
+* @author Robert Sedgewick
+* @author Kevin Wayne
+*
+* Code can be obtained via their algorithms textbook website.
+* Website: https://algs4.cs.princeton.edu/41graph/
+*/
+public class BreadthFirstSearch {
+    private static final int INFINITY = Integer.MAX_VALUE;
+    private boolean[] marked; // marked[v] = true iff v is reachable from s
+    private int[] edgeTo; // edgeTo[v] = last edge on path from s to v
+    private int[] disto; // distTo[v] = length of shortest path from s to v
+    
+    // initialize instance variables and do BFS
+    public BreadthFirstSearch(Digraph G, int s){
+        marked = new boolean[G.V()];
+        edgeTo = new int[G.V()];
+        distTo = new int[G.V()];
+        for (int v = 0; v < G.V(); v++){
+            distTo[v] = INFINITY;
+        }
+        validateVertex(s);
+        bfs(G, s);
+    }
+    
+    // implementation of BFS (only a few lines of code)
+    private void bfs(Digraph G, int v){
+        Queue<Integer> q = new Queue<>();
+        marked[s] = true;
+        distTo[s] = 0; // initialize dist as 0 for source vertex
+        q.enqueue(s); // add source onto the queue
+        // keep looping until the queue is empty
+        while(!q.isEmpty()){
+            // remove element from queue
+            int v = q.dequeue();
+            // add all elements adj to the removed vertex onto the queue
+            for (int w : G.adj(v)){
+                if (!marked[w]){
+                    edgeTo[w] = v; // last vertex that vertex w came from
+                    distTo[w] = distTo[v] + 1; // update distance
+                    marked[w] = true; // mark the vertex as visited
+                    q.enqueue(w); // add vertex to the queue
+                }
+            }
+        }
+    }
+}
+\`\`\`
+
+### Paths
+We will now focus on returning the path that BFS takes to go from *$S \\rightarrow V*. In other words, we want the path from the source to the target vertex.
+\`\`\`java
+// returns distance of path s -> v
+public int distTo(int v){
+    validateVertex(v);
+    return distTo[v];
+}
+
+// used to determine whether there's a path from s -> v
+public boolean hasPathTo(int v) {
+    validateVertex(v);
+    return marked[v];
+}
+
+// loop from vertex and retrace steps using edgeTo[]
+// we use a stack to return our iterable in last-first order (easy to implement)
+// ex: [1, 4, 6] would return "6 4 1" within our iterable
+public Iterable<Integer> pathTo(int v) {
+    validateVertex(v);
+    if (!hasPathTo(v)) return null;
+    Stack<Integer> path = new Stack<Integer>();
+    int x; // we will need this once we are done looping to get our source vertex
+    // keep looping until distTo[x] is 0 (which means it's the source)
+    for (x = v; distTo[x] != 0; x = edgeTo[x]){
+        path.push(x);
+    }
+    // push the source once we are done looping through our edgeTo[]
+    path.push(x);
+    return path;
+}
+\`\`\`
+
+## Visualizer
+...And that's it! Our implementation of a BFS should be working just fine. Remember, there is also a visualization tool for visualizing BFS! Click the button below to check out the visualizer!
+`
+
+export let edgeWeightedGraphsMarkdown = `
+# Edge-Weighted Graphs
+This part of the page will go over an implementation of an edge-weighted graph.
+
+## Edge-Weighted Graph Implementation
+An edge-weighted graph is an undirected graph that has edges that either have a **weight** or **cost.** Before implementing the graph itself, we will implement the **Edge** itself.
+
+### Edge Implementation
+We will use the following **Edge** implementation for our Edge-Weighted Graph.
+\`\`\`java
+/*
+* Original authors:
+* @author Robert Sedgewick
+* @author Kevin Wayne
+*
+* Code can be obtained via their algorithms textbook website.
+* Website: https://algs4.cs.princeton.edu/41graph/
+*/
+public class Edge implements Comparable<Edge> {
+    private final int v; // vertex v
+    private final int w; // vertex w
+    private final double weight; // weight of the edge from v -> w
+
+    // initialize instance variables
+    public Edge(int v, int w, double weight){
+        if (v < 0) throw new IllegalArgumentException();
+        if (w < 0) throw new IllegalArgumentException();
+        if (Double.isNaN(weight)) throw new IllegalArgumentException();
+        this.v = v;
+        this.w = w;
+        this.weight = weight;
+    }
+    
+    // returns weight
+    public double weight(){
+        return weight;
+    }
+    
+    // returns either vertex
+    public int either(){
+        return v;
+    }
+    
+    // returns vertex that is diff from given vertex
+    public int other(int vertex){
+        if      (vertex == v) return w;
+        else if (vertex == w) return v;
+        else throw new IllegalArgumentException();
+    }
+    
+    // used for comparing edge weights
+    @Override
+    public int compareTo(Edge that) {
+        return Double.compare(this.weight, that.weight);
+    }
+    
+    // string representation of edge
+    public String toString() {
+        return String.format("%d-%d %.5f", v, w, weight);
+    }
+}
+\`\`\`
+
+### Edge-Weighted Graph
+We will be implementing the barebones logic of an Edge-Weighted Graph.
+\`\`\`java
+/*
+* Original authors:
+* @author Robert Sedgewick
+* @author Kevin Wayne
+*
+* Code can be obtained via their algorithms textbook website.
+* Website: https://algs4.cs.princeton.edu/41graph/
+*/
+public class EdgeWeightedGraph {
+    private static final String NEWLINE = System.getProperty("line.separator");
+    private final int V; // number of vertices
+    private int E; // number of edges
+    private Bag<Edge>[] adj; // adj list for vertex v
+    
+    // initialize instance variables
+    public EdgeWeightedGraph(int V) {
+        if (V < 0) throw new IllegalArgumentException();
+        this.V = V;
+        this.E = 0;
+        adj = (Bag<Edge>[]) new Bag[V]; // array of lists of type edge
+        for (int v = 0; v < V; v++) {
+            adj[v] = new Bag<Edge>(); // initialize adj lists
+        }
+    }
+}
+\`\`\`
+
+### Helper Method 
+We will use the following helper method to validate that our vertices are within the bounds *$[0, V-1]*
+\`\`\`java
+private void validateVertex(int v) {
+    if (v < 0 || v >= V){
+        throw new IllegalArgumentException();
+    }
+}
+\`\`\`
+
+### Getters
+We will be using the following methods to get the number of vertices and edges.
+\`\`\`java
+public int V(){
+    return V;
+}
+
+public int E(){
+    return E;
+}
+\`\`\`
+
+### Adding Edges
+We will using the following method to add edges into our graph. Remember, this is an **undirected** graph, so both vertices **must** connect to one another. In a **directed** graph we would only add the edge from *$V \\rightarrow W*
+\`\`\`java
+public void addEdge(Edge e){
+    int v = e.either();
+    int w = e.other(v);
+    validateVertex(v);
+    validateVertex(w);
+    adj[v].add(e);
+    adj[w].add(e);
+    E++;
+}
+\`\`\`
+
+### Relevant Methods
+We will go over two important methods for graphs, **degree()** and **adj()**.
+
+### Adjacent Vertices
+We will want to get an iterable that includes all vertices adjacent to a vertex. 
+\`\`\`java
+public Iterable<Integer> adj(int v){
+    validateVertex(v);
+    return adj[v];
+}
+\`\`\`
+
+### Degree
+We will also want to know the number of vertices connected to a vertex.
+\`\`\`java
+public int degree(int v){
+    validateVertex(v);
+    return adj[v].size();
+}
+\`\`\`
+
+### Edges Iterable
+We also want to be able to return all Edges within our Edge-Weighted graph.
+\`\`\`java
+public Iterable<Edge> edges() {
+    Bag<Edge> list = new Bag<Edge>();
+    for (int v = 0; v < V; v++) {
+        int selfLoops = 0;
+        for (Edge e : adj(v)) {
+            // makes sure it only adds an edge from v -> w once 
+            // since one vertex will always be greater in index
+            if (e.other(v) > v) {
+                list.add(e);
+            }
+            // handles the other case where v == w
+            // add only one copy of each self loop (self loops will be consecutive)
+            else if (e.other(v) == v) {
+                if (selfLoops % 2 == 0) list.add(e);
+                selfLoops++;
+            }
+        }
+    }
+    return list;
+}
+\`\`\`
+
+### String Representation
+We will use the following string representation for our graph.
+\`\`\`java
+public String toString() {
+    StringBuilder s = new StringBuilder();
+    s.append(V).append(" ").append(E).append(NEWLINE);
+    for (int v = 0; v < V; v++) {
+        s.append(v).append(": ");
+        for (Edge e : adj[v]) {
+            s.append(e).append("  ");
+        }
+        s.append(NEWLINE);
+    }
+    return s.toString();
+}
+## Visualizer
+...And that's it! Our implementation of an Edge-Weighted Graph should be working just fine. Remember, there is also a visualization tool for visualizing an Edge-Weighted Graph! Click the button below to check out the visualizer!
+`
+
+export let mstsMarkdown = `
+# Minimum Spanning Trees
+This part of the page will go over **two** implementations in finding a **minimum spanning tree.**
+
+## Terminology
+A minimum spanning tree is the spanning tree of a graph with the least amount of total weight. The image below explains this concept.
+![Minimum Spanning Trees](https://algs4.cs.princeton.edu/43mst/images/mst.png)
+
+Image credits go to Robert Sedgewick & Kevin Wayne. Images can be obtained via their algorithms textbook [website.](https://algs4.cs.princeton.edu/43mst/)
+
+## Kruskal's Algorithm Implementation
+Kruskal's Algorithm will be the first algorithm we will go over as it is a simple but elegant way of finding a minimum spanning tree.
+
+### Rationale
+In-order to find the minimum spanning tree of a graph, we have the weights in order from least to greatest by sorting the edges by weight. Start the process from least to greatest, if the edge does not make a cycle, then it is part of the minimum spanning tree. This is the basic idea of Kruskal's algorithm.
+
+### Kruskal's Algorithm
+This is the setup used for Kruskal's Algorithm.
+\`\`\`java
+/*
+* Original authors:
+* @author Robert Sedgewick
+* @author Kevin Wayne
+*
+* Code can be obtained via their algorithms textbook website.
+* Website: https://algs4.cs.princeton.edu/41graph/
+*/
+
+public class KruskalMST {
+    private double weight;
+    private Queue<Edge> mst new Queue<>();
+    
+    public KruskalMST(EdgeWeightedGraph G){
+        // get the edges of the graph
+        Edge[] edges = new Edge(G.E());
+        int t = 0;
+        for (Edge e : G.edges()){
+            edges[t++] = e;
+        }
+        // sort edges by weight (edge uses comparable)
+        Arrays.sort(edges);
+        
+        // run greedy algorithm
+        UF uf = new UF(G.V());
+        for (int i = 0; i < G.E() && mst.size() < G.V() - 1; i++) {
+            // gets the vertices v -> w from the edge
+            Edge e = edges[i];
+            int v = e.either();
+            int w = e.other(v);
+
+            // make sure that v-w does not create a cycle
+            // in other words, make sure that both vertices aren't in the MST
+            // if both vertices aren't in the MST, add edge to MST
+            if (uf.find(v) != uf.find(w)) {
+                uf.union(v, w);     // merge v and w components
+                mst.enqueue(e);     // add edge e to mst
+                weight += e.weight();
+            }
+        }
+    }
+}
+\`\`\`
+
+### Relevant Methods
+Once we are done with the algorithm, we can get an iterable of the edges in the MST and we can get the total weigth of the MST.
+\`\`\`java
+public Iterable<Edge> edges(){
+    return  mst;
+}
+
+public double weight(){
+    return weight;
+}
+\`\`\`
+
+## Prim's Algorithm Implementation
+[TODO]
+`
+
+export let edgeWeightedDigraphsMarkdown = `
+# Edge-Weighted Digraphs
+This part of the page will go over an implementation of an edge-weighted digraph.
+
+## Edge-Weighted Digraph Implementation
+For the most part, an implementation of an edge-weighted digraph is similar to an implementation of an edge-weighted graph, as it just a digraph that has edges that either have a **weight** or **cost.** Before implementing the graph itself, we will implement the DirectedEdge itself.
+\`\`\`java
+/*
+* Original authors:
+* @author Robert Sedgewick
+* @author Kevin Wayne
+*
+* Code can be obtained via their algorithms textbook website.
+* Website: https://algs4.cs.princeton.edu/41graph/
+*/
+public class DirectedEdge implements Comparable<DirectedEdge> {
+    private final int v; // vertex v
+    private final int w; // vertex w
+    private final double weight; // weight of the edge from v -> w
+
+    // initialize instance variables
+    public Edge(int v, int w, double weight){
+        if (v < 0) throw new IllegalArgumentException();
+        if (w < 0) throw new IllegalArgumentException();
+        if (Double.isNaN(weight)) throw new IllegalArgumentException();
+        this.v = v;
+        this.w = w;
+        this.weight = weight;
+    }
+    
+    // returns weight
+    public double weight(){
+        return weight;
+    }
+    
+    // returns either vertex
+    public int from(){
+        return v;
+    }
+    
+    // returns vertex that is diff from given vertex
+    public int to(int vertex){
+        return w; // key difference as we can no longer go from w -> v
+    }
+    
+    // used for comparing edge weights
+    @Override
+    public int compareTo(Edge that) {
+        return Double.compare(this.weight, that.weight);
+    }
+    
+    // string representation of edge
+    public String toString() {
+        return v + "->" + w + " " + String.format("%5.2f", weight);
+    }
+}
+\`\`\`
+
+### Edge-Weighted Digraph
+We will be implementing the barebones logic of an Edge-Weighted Digraph.
+\`\`\`java
+/*
+* Original authors:
+* @author Robert Sedgewick
+* @author Kevin Wayne
+*
+* Code can be obtained via their algorithms textbook website.
+* Website: https://algs4.cs.princeton.edu/41graph/
+*/
+
+public class EdgeWeightedDigraph {
+    private static final String NEWLINE = System.getProperty("line.separator");
+    private final int V; // number of vertices
+    private int E; // number of edges
+    private Bag<DirectedEdge>[] adj; // adj list for vertex v
+    private int[] indegree; // indegree of vertex v
+
+    // initialize instance variables
+    public EdgeWeightedDigraph(int V) {
+        if (V < 0) throw new IllegalArgumentException();
+        this.V = V;
+        this.E = 0;
+        this.indegree = new int[V];
+        adj = (Bag<DirectedEdge>[]) new Bag[V]; // array of lists
+        for (int v = 0; v < V; v++){
+            adj[v] = new Bag<DirectedEdge>(); // initialize adj lists
+        }
+    }
+}
+\`\`\`
+
+### Helper Method 
+We will use the following helper method to validate that our vertices are within the bounds *$[0, V -1]*
+\`\`\`java
+private void validateVertex(int v){
+    if (v < 0  || v >= V){
+        throw new IllegalArgumentException();
+    }
+}
+\`\`\`
+
+### Getters 
+We will be using the following methods to get the number of vertices and edges.
+\`\`\`java
+public int V(){
+    return V;
+}
+
+public int E(){
+    return E;
+}
+\`\`\`
+
+### Adding Edges 
+We will be using the following method to add edges into our graph. In a **directed** graph we **only** add the edge from *$V \\rightarrow W*
+\`\`\`java
+public void addEdge(DirectedEdge e) {
+    int v = e.from();
+    int w = e.to();
+    validateVertex(v);
+    validateVertex(w);
+    adj[v].add(e);
+    indegree[w]++;
+    E++;
+}
+\`\`\`
+
+`
+
+export let shortestPathsMarkdown = `
+# Shortest Paths
+
+`
+
+export let maxFlowMinCutMarkdown = `
+# Maxflow-Mincut
+
 `

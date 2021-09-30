@@ -1,17 +1,13 @@
-#bars-wrapper {
+.main-content {
     display: flex;
-    justify-content: center;
-    align-items: center;
     overflow: auto;
-    margin: 50px 0;
-    flex: 1;
+    margin: auto;
 }
 
-#bars {
+#sorting-visualizer {
     display: flex;
-    justify-content: center;
     align-items: flex-end;
-    height: 100%;
+    margin: 50px;
 }
 
 .array-bar {

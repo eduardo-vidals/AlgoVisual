@@ -27,7 +27,7 @@ const endSectionStyle = {
 }
 
 let wrapperStyle = {
-    width: "400px"
+    width: "60%"
 }
 
 class MarkdownPage extends React.Component<Props, State> {
