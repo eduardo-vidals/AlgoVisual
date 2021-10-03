@@ -16,7 +16,7 @@ type State = {
     hover: false,
 };
 
-const dataStructuresSections = ["Time Complexity", "ArrayList", "LinkedList", "Heaps", "Binary Search Trees", "Analysis of Data Structures"];
+const dataStructuresSections = ["Time Complexity", "ArrayList", "LinkedList", "Priority Queue", "Binary Search Trees", "Analysis of Data Structures"];
 const sortingSections = ["Bubble Sort", "Insertion Sort", "Selection Sort", "Merge Sort", "Quick Sort", "Heap Sort", "Analysis of Sorting Algorithms"]
 const pathfindingSections = ["Graphs", "Depth-First Search (DFS)", "Breadth-First Search (BFS)", "Edge-Weighted Graphs",
     "Minimum Spanning Trees (MSTs)", "Edge-Weighted Digraphs", "Shortest Paths", "Maxflow-Mincut"];
@@ -96,14 +96,14 @@ class Documentation extends React.Component {
                         <MarkdownPage mainDirectory={"/AlgoVisual/documentation/data-structures"}
                                       sections={dataStructuresSections} partNumber={3}
                                       markdown={pageMarkdown.linkedlistMarkdown} section={this.dataStructuresSection}
-                                      nextSectionDirectory={"/AlgoVisual/documentation/data-structures/heaps"}
-                                      nextSection={true} nextSectionName={"4. Heaps"}/>
+                                      nextSectionDirectory={"/AlgoVisual/documentation/data-structures/priority-queues"}
+                                      nextSection={true} nextSectionName={"4. Priority Queues"}/>
                     </Route>
 
-                    <Route exact path={"/AlgoVisual/documentation/data-structures/heaps"}>
+                    <Route exact path={"/AlgoVisual/documentation/data-structures/priority-queues"}>
                         <MarkdownPage mainDirectory={"/AlgoVisual/documentation/data-structures"}
                                       sections={dataStructuresSections} partNumber={4}
-                                      markdown={pageMarkdown.heapsMarkdown} section={this.dataStructuresSection}
+                                      markdown={pageMarkdown.pqMarkdown} section={this.dataStructuresSection}
                                       nextSectionDirectory={"/AlgoVisual/documentation/data-structures/binary-search-trees"}
                                       nextSection={true} nextSectionName={"5. Binary Search Trees"}/>
                     </Route>
@@ -249,7 +249,7 @@ class Documentation extends React.Component {
 
                     <Route exact path={"/AlgoVisual/documentation/pathfinding/maxflow-mincut"}>
                         <MarkdownPage mainDirectory={"/AlgoVisual/documentation/pathfinding"}
-                                      sections={pathfindingSections} partNumber={7}
+                                      sections={pathfindingSections} partNumber={8}
                                       markdown={pageMarkdown.maxFlowMinCutMarkdown} section={this.pathfindingSection}
                                       nextSection={false}/>
                     </Route>

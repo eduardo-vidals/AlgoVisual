@@ -42,22 +42,6 @@ Here is a representation of the asymptomatic bounds used when regarding data str
 Time complexity is an important concept to grasp right away, as we will be analyzing the time complexity of the data structures and algorithms that will be implemented throughout the site. Click below to go to the next section. 
 `
 
-export let heapsMarkdown = `
-# Heaps
-\`\`\`java
-public class ArrayList<E> implements Iterable<E> {
-    private static final int INIT_CAPACITY = 8; // initial capacity of array
-    private E[] arr; 
-    private int n; // size of array
-    
-    public ArrayList(){
-        arr = (E[]) new Object[INIT_CAPACITY]; // generic array 
-        n = 0;
-    }
-}
-\`\`\`
-`
-
 export let binarySearchTreesMarkdown = `
 # Binary Search Trees
 `
@@ -68,7 +52,7 @@ export let analysisOfDataStructuresMarkdown = `
 
 export let arraylistMarkdown = `
 # ArrayList in Java
-This section will go over a simple implementation of ArrayList.
+This section will go over a simple implementation of an ArrayList.
 
 ## Arrays
 As a reminder, keep in mind that arrays have a limited size in the amount of data they can hold. However, in an ArrayList we are able to manipulate arrays in such a way that allows us to insert and remove elements without having to worry about a limited size. 
@@ -395,6 +379,341 @@ The **remove()** method might be a bit hard to understand so images will be prov
 
 ## Visualizer
 ...And that's it! Our implementation of a LinkedList should be working just fine. Remember, there is also a visualization tool of how the pointers operate in a LinkedList. Click the button below to check out the visualizer!
+`
+
+export let pqMarkdown = `
+# Priority Queues
+This section will go over **two** implementations of a priority queue.
+
+## Terminology
+The following image will show an example of a **complete binary tree**, which is just a tree that has all levels filled except possibly the last one. In a **heap** data structure, the structure is that of a complete binary tree. To accomplish this, we use an **array** and position the elements in such a way that the element with the **highest** priority is **always** on top. A **priority queue** uses a **heap** to **add** and **remove** elements into the heap. Our implementation of a heap will start at index 1.
+![Complete Binary Tree](https://algs4.cs.princeton.edu/24pq/images/heap-representations.png)
+
+ Image credits go to Robert Sedgewick & Kevin Wayne. Images can be obtained via their algorithms textbook [website.](https://algs4.cs.princeton.edu/24pq/)
+ 
+ To move down in the tree, we use the following:
+ - Node: *$k*
+ - Left Child: *$2 * k*
+ - Right Child: *$2 * k + 1*
+    
+ To move up in the tree, we use the following:
+ - Node: *$k*
+ - Parent: *$k \\div 2*
+ 
+## Priority Queue Implementation
+Keeping the last section in mind, we will use a **heap** data structure to implement our priority queue such that elements with minimum values have the highest priority. We will be implementing the barebones logic of a priority queue. 
+\`\`\`java
+/*
+* Original authors:
+* @author Robert Sedgewick
+* @author Kevin Wayne
+*
+* Code can be obtained via their algorithms textbook website.
+* Website: https://algs4.cs.princeton.edu/24pq/
+*/
+
+public class MinPQ<E> implements Iterable<E> {
+    private E[] pq; // heap data structure
+    private int n; // size of heap
+    
+    public MinPQ(int size){
+        pq = (E[]) new Object[size + 1];
+        n = 0;
+    }
+    
+    public MinPQ(){
+        this(1);
+    }
+}
+\`\`\`
+
+### Relevant Methods
+First, let's implement the straightforward methods of our priority queue.
+\`\`\`java
+public boolean isEmpty() {
+    return n == 0;
+}
+
+public int size() {
+    return n;
+}
+\`\`\`
+
+### Helper Methods
+We will use the following helper methods for our priority queue.
+\`\`\`java
+private void resize(int capacity) {
+    E[] temp = (E[]) new Object[capacity];
+    for (int i = 1; i <= n; i++) {
+        temp[i] = pq[i];
+    }
+    pq = temp;
+}
+
+private boolean greater(int i, int j) {
+    return ((Comparable<E>) pq[i]).compareTo(pq[j]) > 0;
+}
+
+private void exch(int i, int j) {
+    E swap = pq[i];
+    pq[i] = pq[j];
+    pq[j] = swap;
+}
+\`\`\`
+
+### Heap Helper Methods
+We will go over two important methods regarding heaps, **swim()** and **sink().** 
+\`\`\`java
+// ensures the heap order is not violated when a node is greater than its parent
+private void swim(int k) {
+    // keep looping when a node is an index above the root
+    // and when its parent is greater in value
+    while (k > 1 && greater(k/2, k)) {
+        exch(k, k/2); // exch node with parent
+        k = k/2; // update to new node index for the loop
+    }
+}
+
+// ensures the heap order is not violated when a node is less than its children
+private void sink(int k) {
+    while (2*k <= n) {
+        int j = 2*k; // left child
+        // use right child if it's less than left child
+        if (j < n && greater(j, j+1)) j++;
+        // end loop if the node is less than the child
+        if (!greater(k, j)) break;
+        exch(k, j); // otherwise exchange the node and child 
+        k = j; // update to new node index for the loop
+    }
+}
+\`\`\`
+
+### Instance Methods
+We can now easily implement the **insert()** and **delMin()** operations for our priority queue.
+\`\`\`java
+// we insert at the end of the heap and keep our heap order by using swim()
+public void insert(E item){
+    // double size of array if necessary
+    if (n == pq.length - 1) resize(2 * pq.length);
+    pq[++n] = item; // adds new item to heap
+    swim(n); // swim up to maintain heap order
+}
+
+// we first swap the root with the last element in the heap while also decreasing
+// the size of our heap and keep our heap order by using sink()
+public E delMin() {
+    if (isEmpty()) throw new NoSuchElementException();
+    E min = pq[1]; // min starts at index 1
+    exch(1, n--); // swap index 1 with last element in the heap
+    sink(1); // sink down to maintain heap order
+    pq[n+1] = null; // to avoid loitering and help with garbage collection
+    // resize if size of array is too big for the number of elements it has
+    if ((n > 0) && (n == (pq.length - 1) / 4)) resize(pq.length / 2);
+    return min;
+}
+\`\`\`
+
+### Iterator
+Let's now implement an iterator for our priority queue.
+\`\`\`java
+public Iterator<E> iterator() {
+    return new HeapIterator();
+}
+
+private class HeapIterator implements Iterator<E> {
+    // create a new pq
+    private MinPQ<E> copy;
+    // add all items to copy of heap
+    // takes linear time since already in heap order so no keys move
+    public HeapIterator() {
+        copy = new MinPQ<E>(size());
+        for (int i = 1; i <= n; i++) {
+            copy.insert(pq[i]);
+        }
+    }
+
+    public boolean hasNext() { 
+        return !copy.isEmpty();            
+    }
+
+    public Key next() {
+        if (!hasNext()) throw new NoSuchElementException();
+        return copy.delMin();
+    }
+    
+    public void remove() { 
+        throw new UnsupportedOperationException();
+    }
+}
+\`\`\`
+
+## Indexed Priority Queue Implementation
+This version of a priority queue will support indexing in such a way that we can **retrieve** the values within our heap with a **unique** index key. In a way, this can be thought of as a map. This will be an important data structure when algorithms such as Prim's and Dijkstra's are introduced in the pathfinding sections of this website. We will now be implementing the barebones logic of an indexed priority queue.
+\`\`\`java
+public class IndexMinPQ<E extends Comparable<E> implements Iterable<Integer> {
+    private int n; // size of PQ
+    private int maxN; // max size for PQ
+    private E[] keys; // keys assigned a unique index from [0, maxN)
+    private int[] pq; // gets the index a key is associated with in heap position i 
+    private int[] qp; // heap position of a key with index i (inverse of pq)
+    
+    // initialize instance variables
+    public IndexMinPQ(int maxN) {
+        if (maxN < 0) throw new IllegalArgumentException();
+        this.maxN = maxN;
+        n = 0;
+        keys = (Key[]) new Comparable[maxN + 1];
+        qp   = new int[maxN + 1];
+        pq   = new int[maxN + 1];
+        // initialize arrays to -1 as there are no heap or key indexes
+        for (int i = 0; i <= maxN; i++){
+            pq[i] = -1;
+            qp[i] = -1;
+        }
+    }
+}
+\`\`\`
+
+### Relevant Methods
+First, let's implement the straightforward methods of our priority queue.
+\`\`\`java
+public boolean isEmpty() {
+    return n == 0;
+}
+
+public int size() {
+    return n;
+}
+
+public boolean contains(int i) {
+    validateIndex(i);
+    return qp[i] != -1;
+}
+\`\`\`
+
+
+
+### Helper Methods
+We will define the following helper methods for our indexed priority queue.
+\`\`\`java
+// used to validate the index is within the bounds [0, maxN)
+private void validateIndex(int i) {
+    if (i < 0) throw new IllegalArgumentException();
+    if (i >= maxN) throw new IllegalArgumentException();
+}
+
+// uses pq[i] to get key index and uses it in keys[] to get key
+private boolean greater(int i, int j) {
+    return keys[pq[i]].compareTo(keys[pq[j]]) > 0;
+}
+
+// exchanges values from pq (swaps key index values)
+private void exch(int i, int j) {
+    // swap key index values
+    int swap = pq[i];
+    pq[i] = pq[j];
+    pq[j] = swap;
+    // once we swap, update to reversed values
+    qp[pq[i]] = i;
+    qp[pq[j]] = j;
+}
+\`\`\`
+
+### Heap Helper Methods
+The **swim()** and **sink()** methods will stay the same, but it is important to notice that it uses the updated version of **exch().**
+\`\`\`java
+private void swim(int k) {
+    while (k > 1 && greater(k/2, k)) {
+        exch(k, k/2);
+        k = k/2;
+    }
+}
+
+private void sink(int k) {
+    while (2*k <= n) {
+        int j = 2*k;
+        if (j < n && greater(j, j+1)) j++;
+        if (!greater(k, j)) break;
+        exch(k, j);
+        k = j;
+    }
+}
+\`\`\`
+
+### Instance Methods
+We will update our implementation of **insert()** and **deleteMin().** We will also add a new method **decreaseKey()** which will be used in several algorithms we use in future sections.
+\`\`\`java
+// inserts a key with a unique index
+public void insert(int i, Key key) {
+    validateIndex(i);
+    if (contains(i)) throw new IllegalArgumentException();
+    n++;
+    pq[n] = i; // remember, pq stores key indexes
+    qp[i] = n; // qp is the reverse
+    keys[i] = key; // store key in keys array
+    swim(n); // swim up to maintain heap order
+}
+
+// deletes min element in the PQ
+public int delMin() {
+    if (n == 0) throw new NoSuchElementException();
+    int min = pq[1]; // min starts at index 1 (uses key index)
+    exch(1, n--); // swap index 1 with last element in the heap
+    sink(1); // sink down to maintain heap order
+    keys[min] = null; // to help with garbage collection
+    qp[min] = -1; // key index is not used, so replace heap index to -1
+    pq[n+1] = -1; // last heap index is not used, so replace key index to -1
+    return min;
+}
+
+// takes in key index and replaces it with a lower key value
+public void decreaseKey(int i, Key key) {
+    validateIndex(i);
+    if (!contains(i)) throw new NoSuchElementException();
+    if (keys[i].compareTo(key) == 0) throw new IllegalArgumentException();
+    if (keys[i].compareTo(key) < 0) throw new IllegalArgumentException();
+    keys[i] = key; // update key to lower value
+    swim(qp[i]); // swim up to maintain heap order (qp stores heap indexes)
+}
+\`\`\`
+
+### Iterator
+Let's now implement an iterator for our indexed priority queue.
+\`\`\`java
+public Iterator<Integer> iterator() { 
+    return new HeapIterator();
+}
+
+private class HeapIterator implements Iterator<Integer> {
+    // create a new pq
+    private IndexMinPQ<Key> copy;
+
+    // add all elements to copy of heap
+    // takes linear time since already in heap order so no keys move
+    public HeapIterator() {
+        copy = new IndexMinPQ<Key>(pq.length - 1);
+        for (int i = 1; i <= n; i++) {
+            copy.insert(pq[i], keys[pq[i]]);
+        }
+    }
+
+    public boolean hasNext()  { 
+        return !copy.isEmpty();        
+    }
+    
+    public Integer next() {
+        if (!hasNext()) throw new NoSuchElementException();
+        return copy.delMin();
+    }
+    
+    public void remove() { 
+        throw new UnsupportedOperationException();
+    }
+}
+\`\`\`
+
+## Visualizer
+...And that's it! Our implementation of a Priority Queue & Indexed Priority Queue should be working just fine. Remember, there is also a visualization tool for visualizing a graph and digraph! Click the button below to check out the visualizer!
 `
 
 // sorting markdown
@@ -991,7 +1310,7 @@ public void addEdge(int v, int w){
 \`\`\`
 
 ### Relevant Methods
-We will go over two important methods for graphs, **degree()** and **adj()**.
+We will go over three important methods for graphs, **indegree()**, **outdegree()**, and **adj()**.
 
 ### Adjacent Vertices
 We will want to get an iterable that includes all vertices adjacent to a vertex. 
@@ -1398,6 +1717,8 @@ public Iterable<Edge> edges() {
         for (Edge e : adj(v)) {
             // makes sure it only adds an edge from v -> w once 
             // since one vertex will always be greater in index
+            // ex: 0 -> 1, e.other(0) = 1, so add it, e.other(1) = 0, do not add
+            // this is why the graph has an other() method
             if (e.other(v) > v) {
                 list.add(e);
             }
@@ -1638,6 +1959,51 @@ public void addEdge(DirectedEdge e) {
 }
 \`\`\`
 
+### Relevant Methods
+We will go over three important methods for graphs, **indegree()**, **outdegree()**, and **adj()**.
+
+### Adjacent Vertices
+We will want to get an iterable that includes all vertices adjacent to a vertex.
+\`\`\`java
+public Iterable<DirectedEdge> adj(int v) {
+    validateVertex(v);
+    return adj[v];
+}
+\`\`\`
+
+### Degree
+We will also want to know the number of vertices connected to a vertex. For digraphs we have **outdegree** and **indegree**. Outdegree is the number of edges pointing **from** it. Indegree is the number of edges pointing **to** it.
+\`\`\`java
+public int outdegree(int v){
+    validateVertex(v);
+    return adj[v].size();
+}
+
+public int indegree(int v){
+    validateVertex(v);
+    return indegree[v];
+}
+\`\`\`
+
+### String Representation
+We will use the following string representation for our digraph.
+\`\`\`java
+public String toString() {
+    StringBuilder s = new StringBuilder();
+    s.append(V).append(" ").append(E).append(NEWLINE);
+    for (int v = 0; v < V; v++) {
+        s.append(v).append(": ");
+        for (DirectedEdge e : adj[v]) {
+            s.append(e).append("  ");
+        }
+        s.append(NEWLINE);
+    }
+    return s.toString();
+}
+\`\`\`
+
+## Visualizer
+...And that's it! Our implementation of an Edge-Weighted Digraph should be working just fine. Remember, there is also a visualization tool for visualizing an Edge-Weighted Digraph! Click the button below to check out the visualizer!
 `
 
 export let shortestPathsMarkdown = `

@@ -9,7 +9,7 @@ type Props = {
 };
 type State = {};
 
-const sections = ["Time Complexity", "ArrayList", "LinkedList", "Heaps", "Binary Search Trees", "Analysis of Data Structures"];
+const sections = ["Time Complexity", "ArrayList", "LinkedList", "Priority Queues", "Binary Search Trees", "Analysis of Data Structures"];
 
 let wrapperStyle = {
     width: "100%"
