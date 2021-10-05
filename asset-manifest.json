@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/AlgoVisual/static/css/main.aea47002.chunk.css",
-    "main.js": "/AlgoVisual/static/js/main.12923f60.chunk.js",
-    "main.js.map": "/AlgoVisual/static/js/main.12923f60.chunk.js.map",
+    "main.js": "/AlgoVisual/static/js/main.6cba9aaa.chunk.js",
+    "main.js.map": "/AlgoVisual/static/js/main.6cba9aaa.chunk.js.map",
     "runtime-main.js": "/AlgoVisual/static/js/runtime-main.e916599d.js",
     "runtime-main.js.map": "/AlgoVisual/static/js/runtime-main.e916599d.js.map",
     "static/js/2.fb022275.chunk.js": "/AlgoVisual/static/js/2.fb022275.chunk.js",
@@ -17,6 +17,6 @@
     "static/js/runtime-main.e916599d.js",
     "static/js/2.fb022275.chunk.js",
     "static/css/main.aea47002.chunk.css",
-    "static/js/main.12923f60.chunk.js"
+    "static/js/main.6cba9aaa.chunk.js"
   ]
 }
