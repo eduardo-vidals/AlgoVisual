@@ -411,7 +411,6 @@ Keeping the last section in mind, we will use a **heap** data structure to imple
 * Code can be obtained via their algorithms textbook website.
 * Website: https://algs4.cs.princeton.edu/24pq/
 */
-
 public class MinPQ<E> implements Iterable<E> {
     private E[] pq; // heap data structure
     private int n; // size of heap
@@ -550,6 +549,14 @@ private class HeapIterator implements Iterator<E> {
 ## Indexed Priority Queue Implementation
 This version of a priority queue will support indexing in such a way that we can **retrieve** the values within our heap with a **unique** index key. In a way, this can be thought of as a map. This will be an important data structure when algorithms such as Prim's and Dijkstra's are introduced in the pathfinding sections of this website. We will now be implementing the barebones logic of an indexed priority queue.
 \`\`\`java
+/*
+* Original authors:
+* @author Robert Sedgewick
+* @author Kevin Wayne
+*
+* Code can be obtained via their algorithms textbook website.
+* Website: https://algs4.cs.princeton.edu/24pq/
+*/
 public class IndexMinPQ<E extends Comparable<E> implements Iterable<Integer> {
     private int n; // size of PQ
     private int maxN; // max size for PQ
@@ -1482,7 +1489,7 @@ public class BreadthFirstSearch {
     private static final int INFINITY = Integer.MAX_VALUE;
     private boolean[] marked; // marked[v] = true iff v is reachable from s
     private int[] edgeTo; // edgeTo[v] = last edge on path from s to v
-    private int[] disto; // distTo[v] = length of shortest path from s to v
+    private int[] distTo; // distTo[v] = length of shortest path from s to v
     
     // initialize instance variables and do BFS
     public BreadthFirstSearch(Digraph G, int s){
@@ -2008,7 +2015,116 @@ public String toString() {
 
 export let shortestPathsMarkdown = `
 # Shortest Paths
+This part of the page will over **three** implementations of finding the shortest path in an edge-weighted digraph. The **shortest path** is the path with the **least** amount of weight from the source to target vertex.
 
+## Dijkstra's Algorithm
+The first shortest path algorithm that we will go over is Dijkstra's Algorithm. It is a famous algorithm known for finding the shortest path from a source to all other vertices. Weights **must** be non-negative in-order for Dijkstra's algorithm to find the shortest path. We will be implementing the barebones logic of the algorithm.
+
+### Helper Methods
+We will use the following helper method to validate that our vertices are within the bounds *$[0, V - 1]*
+\`\`\`java
+private void validateVertex(int v) {
+    if (v < 0 || v >= V){
+        throw new IllegalArgumentException();
+    }
+}
+\`\`\`
+
+### Relaxation
+We will use an idea called **relaxation** in-order to find the shortest path. The basis for relaxation is to update our data structures if we find a new shortest path from *$S \\rightarrow V*
+\`\`\`java
+// relax edge e and update pq if changed
+private void relax(DirectedEdge e) {
+    int v = e.from(), w = e.to();
+    if (distTo[w] > distTo[v] + e.weight()) {
+        distTo[w] = distTo[v] + e.weight();
+        edgeTo[w] = e;
+        if (pq.contains(w)) {
+            pq.decreaseKey(w, distTo[w]);
+        } else {
+            pq.insert(w, distTo[w]);
+        }
+    }
+}
+\`\`\`
+
+### Dijkstra's Algorithm
+We can now easily implement Dijkstra's algorithm in a beautiful and concise way.
+\`\`\`java
+/*
+* Original authors:
+* @author Robert Sedgewick
+* @author Kevin Wayne
+*
+* Code can be obtained via their algorithms textbook website.
+* Website: https://algs4.cs.princeton.edu/44sp/
+*/
+public class DijkstraSP {
+    private double[] distTo;          // distTo[v] = distance  of shortest s->v path
+    private DirectedEdge[] edgeTo;    // edgeTo[v] = last edge on shortest s->v path
+    private IndexMinPQ<Double> pq;    // indexed priority queue of vertices
+    
+    // run dijkstra's algorithm
+    public DijkstraSP(EdgeWeightedDigraph G, int s){
+        for (DirectedEdge e : G.edges()) {
+            if (e.weight() < 0){
+                throw new IllegalArgumentException();
+            }
+        }
+        distTo = new double[G.V()];
+        edgeTo = new DirectedEdge[G.V()];
+        // validate that the source vertex exists
+        validateVertex(s);
+        // make all weights as infinity
+        for (int v = 0; v < G.V(); v++) {
+            distTo[v] = Double.POSITIVE_INFINITY;
+        }
+        // except for the vertex, as that is our starting vertex
+        distTo[s] = 0.0;
+        // relax vertices in order of distance from s
+        pq = new IndexMinPQ<Double>(G.V());
+        pq.insert(s, distTo[s]);
+        while (!pq.isEmpty()) {
+            int v = pq.delMin();
+            for (DirectedEdge e : G.adj(v)){
+                relax(e);
+            }
+        }
+    }
+}
+\`\`\`
+
+### Paths
+We will now focus on returning the path that BFS takes to go from *$S \\rightarrow V*. In other words, we want the path from the source to the target vertex.
+\`\`\`java
+// returns distance of path s -> v
+public double distTo(int v) {
+    validateVertex(v);
+    return distTo[v];
+}
+
+// used to determine whether there's a path from s -> v
+public boolean hasPathTo(int v) {
+    validateVertex(v);
+    return distTo[v] < Double.POSITIVE_INFINITY;
+}
+    
+// loop from vertex and retrace steps using edgeTo[]
+// we use a stack to return our iterable in last-first order (easy to implement)
+// ex: [1, 4, 6] would return "6 4 1" within our iterable
+public Iterable<DirectedEdge> pathTo(int v) {
+    validateVertex(v);
+    if (!hasPathTo(v)) return null;
+    Stack<DirectedEdge> path = new Stack<DirectedEdge>();
+    for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
+        path.push(e);
+    }
+    return path;
+}
+\`\`\`
+
+### Visualizer
+...And that's it! Our implementation of a Dijkstra's Algorithm should be working just fine. Remember, there is also a visualization tool for visualizing BFS! Click the button below to check out the visualizer!
 `
 
 export let maxFlowMinCutMarkdown = `
