@@ -12,7 +12,7 @@ Website is deployed at: https://eduardo-vidals.github.io/AlgoVisual
 
 **[✔]** Visualize sorting algorithms
 
-**[⛏]** Visualize path finding algorithms
+**[⛏]** Visualize pathfinding algorithms
 
 **[⛏]** Algorithm implementations provided in Java
 
