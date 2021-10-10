@@ -4,6 +4,7 @@ export function recursiveDivision(grid: Node[][]) {
     const walls: Node[] = [];
     addOuterWalls(grid, walls);
     addInnerWalls(true, 1, grid[0].length - 2, 1, grid.length - 2, grid, walls);
+    addOuterWalls(grid, walls)
     return walls;
 }
 

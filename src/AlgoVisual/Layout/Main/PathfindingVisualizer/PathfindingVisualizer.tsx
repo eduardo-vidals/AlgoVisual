@@ -26,7 +26,7 @@ const START_NODE_ROW = 3;
 const START_NODE_COL = 3;
 const FINISH_NODE_ROW = 27;
 const FINISH_NODE_COL = 27;
-const VISITED_NODES_SPEED = 10;
+const VISITED_NODES_SPEED = 20;
 const SHORTEST_PATH_SPEED = 30;
 
 class PathfindingVisualizer extends React.Component<Props, State> {
@@ -56,11 +56,33 @@ class PathfindingVisualizer extends React.Component<Props, State> {
         const grid = this.getInitialGrid();
         this.resizeGrid();
         this.setState({grid: grid});
-        let root = document.getElementById("grid");
+        let root = document.getElementById("grid-wrapper");
+        let total = 0;
+        root!.ontouchmove = (e) => {
+            // why does this work??? is this a reference to state grid??? is it cause of pass by val??
+            const wallsGrid: Node[][] = this.state.grid.slice();
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                let element = e.changedTouches[i];
+                let v = document.elementFromPoint(element.clientX, element.clientY);
+                if (v != null) {
+                    if (v.classList.contains("node") && (!v.classList.contains("node-start") && (!v.classList.contains("node-finish")))) {
+                        const line = v.id.split("-");
+                        const col = parseInt(line[1]);
+                        const row = parseInt(line[2]);
+                        total += 10;
+                        v.className = 'node node-wall';
+                        // results in more efficient results...why?
+                        // maybe cause pass by value returns a reference (like in java)????
+                        wallsGrid[row][col].isWall = !wallsGrid[row][col].isWall;
+                    }
+                }
+            }
+        }
+
         root!.onmousedown = (e) => {
             // breaks walls for  grid, do not remove
+            // e.stopImmediatePropagation(); (didn't allow elements to be placed on first click)
             e.preventDefault();
-            e.stopImmediatePropagation();
             this.setState({mouseIsPressed: true});
         }
         root!.onmouseup = (e) => {
@@ -145,7 +167,7 @@ class PathfindingVisualizer extends React.Component<Props, State> {
 
     handleMouseDown(row: number, col: number) {
         const newGrid = this.getNewGridWithWallToggled(this.state.grid, row, col);
-        this.setState({grid: newGrid, initialGrid: newGrid});
+        this.setState({grid: newGrid, initialGrid: newGrid, mouseIsPressed: true});
     }
 
     handleMouseEnter(row: number, col: number) {
@@ -156,6 +178,11 @@ class PathfindingVisualizer extends React.Component<Props, State> {
     }
 
     handleMouseUp() {
+        this.setState({mouseIsPressed: false});
+    }
+
+
+    handleMouseLeave() {
         this.setState({mouseIsPressed: false});
     }
 
@@ -287,8 +314,9 @@ class PathfindingVisualizer extends React.Component<Props, State> {
                         const {row, col, isFinish, isStart, isWall} = node;
                         return (
                             <GridNode row={row} col={col} isStart={isStart} isFinish={isFinish} isWall={isWall}
-                                      onMouseEnter={() => this.handleMouseEnter(row, col)}
                                       onMouseDown={() => this.handleMouseDown(row, col)}
+                                      onMouseEnter={() => this.handleMouseEnter(row, col)}
+                                      onTouchMove={() => this.handleMouseEnter(row, col)}
                                       style={this.state.nodeStyle}
                             />
                         )
@@ -344,7 +372,7 @@ class PathfindingVisualizer extends React.Component<Props, State> {
                     </div>
                 </div>
 
-                <div className={"main-content"} id={"grid-wrapper"}>
+                <div className={"main-content"} id={"grid-wrapper"} onMouseLeave={() => this.handleMouseLeave()}>
                     <div id={"grid"}>
                         {nodes}
                     </div>
