@@ -34,7 +34,6 @@
     position: relative;
     margin: 0;
     animation: growDown 250ms ease-in-out forwards;
-    transform-origin: top center;
 }
 
 .selection-options ul {

@@ -1,7 +1,7 @@
 .scroll-to-top-button {
     position: fixed;
-    bottom: 0.5rem;
-    right: 0.5rem;
+    bottom: 20px;
+    right: 20px;
     animation: fadeIn 800ms ease-in-out 1s both;
     cursor: pointer;
 }

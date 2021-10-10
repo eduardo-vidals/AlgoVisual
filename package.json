@@ -17,6 +17,7 @@
     "@types/react-dom": "^17.0.9",
     "@types/react-router-dom": "^5.1.9",
     "@types/react-syntax-highlighter": "^13.5.2",
+    "immutability-helper": "^3.1.1",
     "install": "^0.13.0",
     "mathjax-full": "^3.2.0",
     "mathjax-react": "^1.0.6",

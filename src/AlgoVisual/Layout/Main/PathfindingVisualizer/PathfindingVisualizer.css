@@ -1,5 +1,6 @@
-#pathfinding-visualizer {
-    margin: 40px;
+#grid {
+    margin: 20px;
+    width: 100%;
 }
 
 .grid-row {
