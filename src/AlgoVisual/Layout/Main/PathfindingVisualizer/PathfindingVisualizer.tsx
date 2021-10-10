@@ -8,7 +8,7 @@ import {bfsPath, bfsVisited} from "./Algorithms/BFS";
 import update from 'immutability-helper';
 import {recursiveDivision} from "./MazeGeneration/RecursiveDivision";
 
-const options = ["DFS", "BFS", "Dijkstra"];
+const options = ["DFS", "BFS", "Dijkstra", "A*"];
 type Props = {};
 type State = {
     grid: Node[][],
@@ -24,34 +24,39 @@ type State = {
 
 const START_NODE_ROW = 3;
 const START_NODE_COL = 3;
-const FINISH_NODE_ROW = 17;
-const FINISH_NODE_COL = 17;
+const FINISH_NODE_ROW = 27;
+const FINISH_NODE_COL = 27;
 const VISITED_NODES_SPEED = 10;
 const SHORTEST_PATH_SPEED = 30;
 
 class PathfindingVisualizer extends React.Component<Props, State> {
     private dropdownSelection = createRef<HTMLDivElement>();
     private dropdownCaret = createRef<HTMLDivElement>();
+
     constructor(props: Props) {
         super(props);
         this.state = {
             grid: [],
             initialGrid: [],
             mouseIsPressed: false,
-            rows: 21,
-            cols: 21,
+            rows: 31,
+            cols: 31,
             algorithm: "Dijkstra",
             showAlgorithms: false,
             optionsDisabled: false,
             nodeStyle: {width: "20px", height: "20px"}
         }
+        this.showAlgorithms = this.showAlgorithms.bind(this);
+        this.closeAlgorithms = this.closeAlgorithms.bind(this);
+        this.changeAlgorithm = this.changeAlgorithm.bind(this);
+        this.runAlgorithm = this.runAlgorithm.bind(this);
     }
 
     componentDidMount() {
         const grid = this.getInitialGrid();
         this.resizeGrid();
         this.setState({grid: grid});
-        let root = document.getElementById("root");
+        let root = document.getElementById("grid");
         root!.onmousedown = (e) => {
             // breaks walls for  grid, do not remove
             e.preventDefault();
@@ -70,7 +75,7 @@ class PathfindingVisualizer extends React.Component<Props, State> {
         }, true);
     }
 
-    resizeGrid(){
+    resizeGrid() {
         let COLS = this.state.cols;
         let mainContentWidth = document.getElementById("main")!.offsetWidth;
         let dimension = Math.floor(mainContentWidth / (COLS * 2.5)) + "px";
@@ -84,18 +89,20 @@ class PathfindingVisualizer extends React.Component<Props, State> {
 
     showAlgorithms(e: React.MouseEvent) {
         // ensures that you close menu when clicked again
+        console.log(this.state.showAlgorithms);
         if (!this.state.showAlgorithms) {
+            console.log(this.state.showAlgorithms);
             this.setState({showAlgorithms: true}, () => this.displayAlgorithms());
             // not sure why this works but will figure out soon
             // makes dropdown work magically!
             e.stopPropagation();
-            document.addEventListener("click", this.closeSortingAlgorithms);
+            document.addEventListener("click", this.closeAlgorithms);
         }
     }
 
-    closeSortingAlgorithms() {
+    closeAlgorithms() {
         this.setState({showAlgorithms: false}, () => this.displayAlgorithms());
-        document.removeEventListener("click", this.closeSortingAlgorithms)
+        document.removeEventListener("click", this.closeAlgorithms)
     }
 
     displayAlgorithms() {
@@ -114,11 +121,11 @@ class PathfindingVisualizer extends React.Component<Props, State> {
         this.setState({algorithm: option});
     }
 
-    runSortingAlgorithm() {
+    runAlgorithm() {
         this.setState({optionsDisabled: true}, () => {
             switch (this.state.algorithm) {
                 case 'DFS':
-                    this.visualizeBFS();
+                    this.visualizeDFS();
                     break;
                 case 'BFS':
                     this.visualizeBFS();
@@ -152,23 +159,20 @@ class PathfindingVisualizer extends React.Component<Props, State> {
         this.setState({mouseIsPressed: false});
     }
 
-    recursiveBacktrack(){
-        let walls = recursiveDivision(this.state.grid);
-        const newGrid = this.state.grid.slice();
-        // @ts-ignore
-        walls = [...new Set(walls)];
+    recursiveDivision() {
+        const wallsGrid = this.state.grid.slice();
+        let walls = recursiveDivision(wallsGrid);
         let totalTime = 0;
         for (let i = 0; i < walls.length; i++) {
             const v = walls[i];
-            newGrid[v.row][v.col].isWall = true;
-            totalTime += 100;
+            totalTime += 10;
             setTimeout(() => {
                 const nodeID = "node-" + v.col + "-" + v.row;
                 document.getElementById(nodeID)!.className = 'node node-wall';
-            }, i * 100)
+            }, i * 10)
         }
         setTimeout(() => {
-            this.setState({grid: newGrid, initialGrid: newGrid});
+            this.setState({grid: wallsGrid, initialGrid: wallsGrid});
         }, totalTime);
     }
 
@@ -233,7 +237,7 @@ class PathfindingVisualizer extends React.Component<Props, State> {
         }
     }
 
-    copyGrid(){
+    copyGrid() {
         const grid: Node[][] = [];
         this.setState({grid: grid}, () => {
             this.setState({grid: this.getCopyGrid()})
@@ -247,12 +251,12 @@ class PathfindingVisualizer extends React.Component<Props, State> {
         });
     }
 
-    getCopyGrid(){
+    getCopyGrid() {
         const grid = [];
         for (let row = 0; row < this.state.rows; row++) {
             const currentRow = [];
             for (let col = 0; col < this.state.cols; col++) {
-                if (this.state.initialGrid[row][col].isWall){
+                if (this.state.initialGrid[row][col].isWall) {
                     currentRow.push(this.state.initialGrid[row][col]);
                 } else {
                     currentRow.push(createNode(col, row));
@@ -299,7 +303,7 @@ class PathfindingVisualizer extends React.Component<Props, State> {
                         <div className={"sidebar-setting"}>
                             <p> Choose an algorithm </p>
 
-                            <div className={"selection-dropdown"} onClick={() => this.showAlgorithms}>
+                            <div className={"selection-dropdown"} onClick={this.showAlgorithms}>
                                 <div className={"current-option"}>
                                     <p> {this.state.algorithm} </p>
                                 </div>
@@ -319,33 +323,15 @@ class PathfindingVisualizer extends React.Component<Props, State> {
                                 </ul>
                             </div>
 
-                            <button disabled={this.state.optionsDisabled} className={"sidebar-button"}
-                                    onClick={() => this.runSortingAlgorithm}>
+                            <button className={"sidebar-button"}
+                                    onClick={this.runAlgorithm}>
                                 Run
                             </button>
                         </div>
 
                         <div className={"sidebar-setting"}>
-                            <p> DFS </p>
-                            <button className={"sidebar-button"} onClick={() => this.visualizeDFS()}>
-                                Run
-                            </button>
-                        </div>
-                        <div className={"sidebar-setting"}>
-                            <p> BFS </p>
-                            <button className={"sidebar-button"} onClick={() => this.visualizeBFS()}>
-                                Run
-                            </button>
-                        </div>
-                        <div className={"sidebar-setting"}>
-                            <p> Dijkstra </p>
-                            <button className={"sidebar-button"} onClick={() => this.visualizeDijkstra()}>
-                                Run
-                            </button>
-                        </div>
-                        <div className={"sidebar-setting"}>
                             <p> Recursive Backtrack Maze </p>
-                            <button className={"sidebar-button"} onClick={() => this.recursiveBacktrack()}>
+                            <button className={"sidebar-button"} onClick={() => this.recursiveDivision()}>
                                 Generate Maze
                             </button>
                         </div>

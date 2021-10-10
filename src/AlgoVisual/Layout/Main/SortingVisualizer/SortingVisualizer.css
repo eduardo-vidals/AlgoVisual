@@ -41,7 +41,7 @@
     left: 0;
     right: 0;
     top: -5px;
-    bottom: -67px;
+    bottom: -65px;
     overflow-y: scroll;
     background-color: #33435d;
 }
@@ -58,6 +58,7 @@
 
 .selection-options ul div {
     cursor: pointer;
+    padding: 1px;
 }
 
 .selection-options ul div:hover{
