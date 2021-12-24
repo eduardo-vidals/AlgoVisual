@@ -1,23 +1,23 @@
 export function getInsertionSortAnimations(arr: number[]) {
-    let animations: [number, number, boolean][] = [];
+    let animations: [number, number, string, string][] = [];
     insertionSort(arr, animations);
     return animations;
 }
 
-function insertionSort(arr: number[], animations: [number, number, boolean][]) {
+function insertionSort(arr: number[], animations: [number, number, string, string][]) {
     for (let i = 1; i < arr.length; i++) {
         let key = arr[i];
         let j = i - 1;
         while (j >= 0 && arr[j] > key) {
-            animations.push([j + 1, j, true]);
-            animations.push([j + 1, j, true]);
-            animations.push([j + 1, arr[j], false]);
+            animations.push([j + 1, j, 'color', 'insert']);
+            animations.push([j + 1, j, 'color', 'revert']);
+            animations.push([j + 1, arr[j], 'swap', 'swap']);
             arr[j + 1] = arr[j];
             j--;
         }
-        animations.push([j + 1, i, true]);
-        animations.push([j + 1, i, true]);
-        animations.push([j + 1, key, false]);
+        animations.push([j + 1, i, 'color', 'insert']);
+        animations.push([j + 1, i, 'color', 'revert']);
+        animations.push([j + 1, key, 'swap', 'swap']);
         arr[j + 1] = key;
     }
 }

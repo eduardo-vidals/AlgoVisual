@@ -1,125 +1,112 @@
-import React, {createRef} from "react";
+import React, {createRef, useEffect, useState} from "react";
 import "./Header.css";
 import {Link} from "react-router-dom"
 
-type Props = {};
-type State = {
-    showAlgosMenu: boolean
-};
+function Header() {
+  const dropdownMenu = createRef<HTMLDivElement>();
+  const dropdownCaret = createRef<HTMLDivElement>();
 
-class Header extends React.Component<Props, State> {
-    private dropdownMenu = createRef<HTMLDivElement>();
-    private dropdownCaret = createRef<HTMLDivElement>();
+  const [showAlgosMenu, setShowAlgosMenu] = useState(false);
 
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            showAlgosMenu: false
-        }
+  useEffect(() => {
+    displayAlgosMenu();
+  }, [showAlgosMenu]);
 
-        // methods
-        this.showAlgosMenu = this.showAlgosMenu.bind(this);
-        this.closeAlgosMenu = this.closeAlgosMenu.bind(this);
-        this.displayAlgosMenu = this.displayAlgosMenu.bind(this);
+  const openAlgosMenu = (e: React.MouseEvent) => {
+    // ensures that you close menu when clicked again
+    if (!showAlgosMenu) {
+      setShowAlgosMenu(true);
+      // not sure why this works but will figure out soon
+      // makes dropdown work magically!
+      e.stopPropagation();
+      document.addEventListener("click", closeAlgosMenu);
     }
+  }
 
-    showAlgosMenu(e: React.MouseEvent) {
-        // ensures that you close menu when clicked again
-        if (!this.state.showAlgosMenu){
-            this.setState({showAlgosMenu: true}, () => this.displayAlgosMenu());
-            // not sure why this works but will figure out soon
-            // makes dropdown work magically!
-            e.stopPropagation();
-            document.addEventListener("click", this.closeAlgosMenu);
-        }
+  const closeAlgosMenu = () => {
+    setShowAlgosMenu(false);
+    document.removeEventListener("click", closeAlgosMenu)
+  }
+
+  const displayAlgosMenu = () => {
+    if (showAlgosMenu) {
+      dropdownMenu.current!.style.display = "block";
+      dropdownCaret.current!.style.transform = "rotate(180deg)";
+      dropdownCaret.current!.style.transition = "all 300ms linear";
+    } else {
+      dropdownMenu.current!.style.display = "none";
+      dropdownCaret.current!.style.transform = "rotate(0deg)";
+      dropdownCaret.current!.style.transition = "all 300ms linear";
     }
+  }
 
-    closeAlgosMenu() {
-        this.setState({showAlgosMenu: false}, () => this.displayAlgosMenu());
-        document.removeEventListener("click", this.closeAlgosMenu)
-    }
+  return (
+    <header id={"header"}>
+      <div id={"logo-wrapper"}>
+        <Link to={"/AlgoVisual"}>
+          <p id={"name"}> AlgoVisual </p>
+        </Link>
+      </div>
 
-    displayAlgosMenu() {
-        if (this.state.showAlgosMenu) {
-            this.dropdownMenu.current!.style.display = "block";
-            this.dropdownCaret.current!.style.transform = "rotate(180deg)";
-            this.dropdownCaret.current!.style.transition = "all 300ms linear";
-        } else {
-            this.dropdownMenu.current!.style.display = "none";
-            this.dropdownCaret.current!.style.transform = "rotate(0deg)";
-            this.dropdownCaret.current!.style.transition = "all 300ms linear";
-        }
-    }
-
-    render() {
-        return (
-            <header id={"header"}>
-                <div id={"logo-wrapper"}>
-                    <Link to={"/AlgoVisual"}>
-                        <p id={"name"}> AlgoVisual </p>
-                    </Link>
+      <div id={"nav-wrapper"}>
+        <nav id={"nav-bar"}>
+          <ul>
+            <li>
+              <div className={"nav-link"}>
+                <div className={"nav-option"} onClick={openAlgosMenu}>
+                  <p className={"noselect"}> Algorithms </p>
+                  <i className="fas fa-caret-down" ref={dropdownCaret}> </i>
                 </div>
+                <div id={"dropdown"} ref={dropdownMenu}>
+                  <ul>
+                    <li>
+                      <Link to={"/AlgoVisual/sorting"} className={"nav-link"}>
+                        <div className={"algos-option"}>
+                          <p> Sorting </p>
+                        </div>
+                      </Link>
+                    </li>
 
-                <div id={"nav-wrapper"}>
-                    <nav id={"nav-bar"}>
-                        <ul>
-                            <li>
-                                <div className={"nav-link"}>
-                                    <div className={"nav-option"} onClick={this.showAlgosMenu}>
-                                        <p className={"noselect"}> Algorithms </p>
-                                        <i className="fas fa-caret-down" ref={this.dropdownCaret}> </i>
-                                    </div>
-                                    <div id={"dropdown"} ref={this.dropdownMenu}>
-                                        <ul>
-                                            <li>
-                                                <Link to={"/AlgoVisual/sorting"} className={"nav-link"}>
-                                                    <div className={"algos-option"}>
-                                                        <p> Sorting </p>
-                                                    </div>
-                                                </Link>
-                                            </li>
+                    <li>
+                      <Link to={"/AlgoVisual/pathfinding"} className={"nav-link"}>
+                        <div className={"algos-option"}>
+                          <p> Pathfinding </p>
+                        </div>
+                      </Link>
+                    </li>
 
-                                            <li>
-                                                <Link to={"/AlgoVisual/pathfinding"} className={"nav-link"}>
-                                                    <div className={"algos-option"}>
-                                                        <p> Pathfinding </p>
-                                                    </div>
-                                                </Link>
-                                            </li>
-
-                                            <li>
-                                                <Link to={"/AlgoVisual/datastructures"} className={"nav-link"}>
-                                                    <div className={"algos-option"}>
-                                                        <p> Data Structures </p>
-                                                    </div>
-                                                </Link>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li>
-
-                            <li>
-                                <Link to={"/AlgoVisual/documentation"} className={"nav-link"}>
-                                    <div className={"nav-option"}>
-                                        <p> Documentation </p>
-                                    </div>
-                                </Link>
-                            </li>
-
-                            <li>
-                                <Link to={"/AlgoVisual/about"} className={"nav-link"}>
-                                    <div className={"nav-option"}>
-                                        <p> About </p>
-                                    </div>
-                                </Link>
-                            </li>
-                        </ul>
-                    </nav>
+                    <li>
+                      <Link to={"/AlgoVisual/datastructures"} className={"nav-link"}>
+                        <div className={"algos-option"}>
+                          <p> Data Structures </p>
+                        </div>
+                      </Link>
+                    </li>
+                  </ul>
                 </div>
-            </header>
-        )
-    }
+              </div>
+            </li>
+
+            <li>
+              <Link to={"/AlgoVisual/documentation"} className={"nav-link"}>
+                <div className={"nav-option"}>
+                  <p> Documentation </p>
+                </div>
+              </Link>
+            </li>
+
+            <li>
+              <Link to={"/AlgoVisual/about"} className={"nav-link"}>
+                <div className={"nav-option"}>
+                  <p> About </p>
+                </div>
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+  );
 }
 
 export default Header;

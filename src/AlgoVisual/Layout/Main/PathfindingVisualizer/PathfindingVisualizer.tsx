@@ -187,6 +187,7 @@ class PathfindingVisualizer extends React.Component<Props, State> {
     }
 
     recursiveDivision() {
+        // works because of pass by value??? (results in more efficient results)
         const wallsGrid = this.state.grid.slice();
         let walls = recursiveDivision(wallsGrid);
         let totalTime = 0;
@@ -198,9 +199,6 @@ class PathfindingVisualizer extends React.Component<Props, State> {
                 document.getElementById(nodeID)!.className = 'node node-wall';
             }, i * 10)
         }
-        setTimeout(() => {
-            this.setState({grid: wallsGrid, initialGrid: wallsGrid});
-        }, totalTime);
     }
 
     visualizeDFS() {

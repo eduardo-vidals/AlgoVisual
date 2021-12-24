@@ -1,23 +1,23 @@
 export function getSelectionSortAnimations(arr: number[]) {
-    let animations: [number, number, boolean][] = [];
+    let animations: [number, number, string, string][] = [];
     selectionSort(arr, animations);
     return animations;
 }
 
-function selectionSort(arr: number[], animations: [number, number, boolean][]) {
+function selectionSort(arr: number[], animations: [number, number, string, string][]) {
     for (let i = 0; i < arr.length; i++) {
         let min = arr[i];
         let minIndex = i;
         for (let j = i; j < arr.length; j++) {
-            animations.push([j, j, true]);
-            animations.push([j, j, true]);
+            animations.push([j, j, 'color', 'insert']);
+            animations.push([j, j, 'color', 'revert']);
             if (min > arr[j]){
                 min = arr[j];
                 minIndex = j;
             }
         }
-        animations.push([i, arr[minIndex], false]);
-        animations.push([minIndex, arr[i], false]);
+        animations.push([i, arr[minIndex], 'swap', 'swap']);
+        animations.push([minIndex, arr[i], 'swap', 'swap']);
         swap(arr, i, minIndex);
     }
 }

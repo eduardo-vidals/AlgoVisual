@@ -1,58 +1,41 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import "./ScrollToTopButton.css";
 
-type Props = {};
-type State = {
-    isVisible: boolean
-};
+function ScrollToTopButton() {
+  const [isVisible, setIsVisible] = useState(false);
 
-class ScrollToTopButton extends React.Component<Props, State>{
-    constructor(props:Props) {
-        super(props);
-        this.state = {
-            isVisible: false
-        };
-    }
+  useEffect(() => {
+    document.addEventListener("scroll", () => {
+      toggleVisibility();
+    });
+  })
 
-    componentDidMount() {
-        const scrollComponent = this;
-        document.addEventListener("scroll", () => {
-            scrollComponent.toggleVisibility();
-        });
+  const toggleVisibility = () => {
+    if (window.scrollY > 100) {
+      setIsVisible(true);
+    } else {
+      setIsVisible(false);
     }
+  }
 
-    toggleVisibility() {
-        if (window.scrollY > 100) {
-            this.setState({
-                isVisible: true
-            });
-        } else {
-            this.setState({
-                isVisible: false
-            });
-        }
-    }
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
 
-    scrollToTop() {
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }
-
-    render() {
-        return (
-            <div className={"scroll-to-top-button"}>
-                {this.state.isVisible && (
-                    <div onClick={() => this.scrollToTop()}>
-                        <div className={"scroll-up"}>
-                            <i className="fas fa-angle-up"/>
-                        </div>
-                    </div>
-                )}
-            </div>
-        );
-    }
+  return (
+    <div className={"scroll-to-top-button"}>
+      {isVisible && (
+        <div onClick={scrollToTop}>
+          <div className={"scroll-up"}>
+            <i className="fas fa-angle-up"/>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default ScrollToTopButton;

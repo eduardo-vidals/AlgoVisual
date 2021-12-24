@@ -1,19 +1,19 @@
 export function getBubbleSortAnimations(arr: number[]) {
-    let animations: [number, number, boolean][] = [];
+    let animations: [number, number, string, string][] = [];
     bubbleSort(arr, animations);
     return animations;
 }
 
-function bubbleSort(arr: number[], animations: [number, number, boolean][]) {
+function bubbleSort(arr: number[], animations: [number, number, string, string][]) {
     for (let i = 0; i < arr.length - 1; i++) {
         let count = 0;
         for (let j = 0; j < arr.length - 1 - i; j++) {
             // comparing values
-            animations.push([j, j + 1, true]);
-            animations.push([j, j + 1, true]);
+            animations.push([j, j + 1, 'color', 'insert']);
+            animations.push([j, j + 1, 'color', 'revert']);
             if (arr[j] > arr[j + 1]) {
-                animations.push([j, arr[j + 1], false]);
-                animations.push([j + 1, arr[j], false]);
+                animations.push([j, arr[j + 1], 'swap', 'swap']);
+                animations.push([j + 1, arr[j], 'swap', 'swap']);
                 swap(arr, j, j + 1);
             } else {
                 count++;
