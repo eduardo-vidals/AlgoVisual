@@ -1,4 +1,4 @@
-import React, {createRef} from "react";
+import React, {createRef, useEffect, useState} from "react";
 import GridNode from "./Node/GridNode";
 import "./PathfindingVisualizer.css";
 import {dijkstraSP, shortestPath} from "./Algorithms/DijkstraSP";
@@ -7,390 +7,349 @@ import {dfsPath, dfsVisited} from "./Algorithms/DFS";
 import {bfsPath, bfsVisited} from "./Algorithms/BFS";
 import update from 'immutability-helper';
 import {recursiveDivision} from "./MazeGeneration/RecursiveDivision";
+import AlgoButtonSetting from "../Common/Settings/AlgoButtonSetting";
+import {disabledButtonStyle, enabledButtonStyle} from "../Common/Styles";
+import AlgoButton from "../Common/AlgoButton";
 
 const options = ["DFS", "BFS", "Dijkstra", "A*"];
-type Props = {};
-type State = {
-    grid: Node[][],
-    initialGrid: Node[][],
-    mouseIsPressed: boolean,
-    rows: number,
-    cols: number,
-    showAlgorithms: boolean,
-    optionsDisabled: boolean,
-    algorithm: string
-    nodeStyle: any
-};
 
 const START_NODE_ROW = 3;
 const START_NODE_COL = 3;
 const FINISH_NODE_ROW = 27;
 const FINISH_NODE_COL = 27;
-const VISITED_NODES_SPEED = 20;
-const SHORTEST_PATH_SPEED = 30;
 
-class PathfindingVisualizer extends React.Component<Props, State> {
-    private dropdownSelection = createRef<HTMLDivElement>();
-    private dropdownCaret = createRef<HTMLDivElement>();
+function PathfindingVisualizer() {
+  const dropdownSelection = createRef<HTMLDivElement>();
+  const dropdownCaret = createRef<HTMLDivElement>();
 
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            grid: [],
-            initialGrid: [],
-            mouseIsPressed: false,
-            rows: 31,
-            cols: 31,
-            algorithm: "Dijkstra",
-            showAlgorithms: false,
-            optionsDisabled: false,
-            nodeStyle: {width: "20px", height: "20px"}
+  const [grid, setGrid] = useState<Node[][]>([]);
+  const [mouseIsPressed, setMouseIsPressed] = useState(false);
+  const [rows, setRows] = useState(31);
+  const [cols, setCols] = useState(31);
+  const [algorithm, setAlgorithm] = useState("Dijkstra");
+  const [showAlgorithms, setShowAlgorithms] = useState(false);
+  const [optionsDisabled, setOptionsDisabled] = useState(false);
+  const [nodeStyle, setNodeStyle] = useState({width: "20px", height: "20px"});
+  const [visitedNodes, setVisitedNodes] = useState<Node[]>([]);
+  const [pathNodes, setPathNodes] = useState<Node[]>([]);
+  const [dropdownStyle, setDropdownStyle] = useState(enabledButtonStyle);
+  const [pathfindingSpeed, setPathfindingSpeed] = useState(20);
+  const [clickedRun, setClickedRun] = useState(false);
+
+  useEffect(() => {
+    resizeGrid();
+    setGrid(getInitialGrid);
+    let root = document.getElementById("grid-wrapper");
+    let total = 0;
+    root!.ontouchmove = (e) => {
+      // why does this work??? is this a reference to state grid??? is it cause of pass by val??
+      const wallsGrid: Node[][] = grid.slice();
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        let element = e.changedTouches[i];
+        let v = document.elementFromPoint(element.clientX, element.clientY);
+        if (v != null) {
+          if (v.classList.contains("node") && (!v.classList.contains("node-start") && (!v.classList.contains("node-finish")))) {
+            const line = v.id.split("-");
+            const col = parseInt(line[1]);
+            const row = parseInt(line[2]);
+            total += 10;
+            v.className = 'node node-wall';
+            // results in more efficient results...why?
+            // maybe cause pass by value returns a reference (like in java)????
+            wallsGrid[row][col].isWall = !wallsGrid[row][col].isWall;
+          }
         }
-        this.showAlgorithms = this.showAlgorithms.bind(this);
-        this.closeAlgorithms = this.closeAlgorithms.bind(this);
-        this.changeAlgorithm = this.changeAlgorithm.bind(this);
-        this.runAlgorithm = this.runAlgorithm.bind(this);
+      }
     }
 
-    componentDidMount() {
-        const grid = this.getInitialGrid();
-        this.resizeGrid();
-        this.setState({grid: grid});
-        let root = document.getElementById("grid-wrapper");
-        let total = 0;
-        root!.ontouchmove = (e) => {
-            // why does this work??? is this a reference to state grid??? is it cause of pass by val??
-            const wallsGrid: Node[][] = this.state.grid.slice();
-            for (let i = 0; i < e.changedTouches.length; i++) {
-                let element = e.changedTouches[i];
-                let v = document.elementFromPoint(element.clientX, element.clientY);
-                if (v != null) {
-                    if (v.classList.contains("node") && (!v.classList.contains("node-start") && (!v.classList.contains("node-finish")))) {
-                        const line = v.id.split("-");
-                        const col = parseInt(line[1]);
-                        const row = parseInt(line[2]);
-                        total += 10;
-                        v.className = 'node node-wall';
-                        // results in more efficient results...why?
-                        // maybe cause pass by value returns a reference (like in java)????
-                        wallsGrid[row][col].isWall = !wallsGrid[row][col].isWall;
-                    }
-                }
-            }
+    root!.onmousedown = (e) => {
+      // breaks walls for  grid, do not remove
+      // e.stopImmediatePropagation(); (didn't allow elements to be placed on first click)
+      e.preventDefault();
+      setMouseIsPressed(true);
+    }
+    root!.onmouseup = (e) => {
+      // breaks walls grid, do not remove
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      setMouseIsPressed(false);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeGrid();
+    }, true);
+  }, [])
+
+  const resizeGrid = () => {
+    let COLS = cols;
+    let mainContentWidth = document.getElementById("main")!.offsetWidth;
+    let dimension = Math.floor(mainContentWidth / (COLS * 2.5)) + "px";
+    setNodeStyle({width: dimension, height: dimension})
+  }
+
+  useEffect(() => {
+    displayAlgorithms();
+  }, [showAlgorithms])
+
+  const showAlgorithmsDropdown = (e: React.MouseEvent) => {
+    // ensures that you close menu when clicked again
+    if (!showAlgorithms && !optionsDisabled) {
+      setShowAlgorithms(true);
+      // not sure why this works but will figure out soon
+      // makes dropdown work magically!
+      e.stopPropagation();
+      document.addEventListener("click", closeAlgorithmsDropdown);
+    }
+  }
+
+  const closeAlgorithmsDropdown = () => {
+    setShowAlgorithms(false);
+    document.removeEventListener("click", closeAlgorithmsDropdown)
+  }
+
+  const displayAlgorithms = () => {
+    if (showAlgorithms) {
+      dropdownSelection.current!.style.display = "block";
+      dropdownCaret.current!.style.transform = "rotate(180deg)";
+      dropdownCaret.current!.style.transition = "all 250ms linear";
+    } else {
+      dropdownSelection.current!.style.display = "none";
+      dropdownCaret.current!.style.transform = "rotate(0deg)";
+      dropdownCaret.current!.style.transition = "all 250ms linear";
+    }
+  }
+
+  // run algorithms and navbar settings when options get disabled (aka algorithms is being ran)d
+  useEffect(() => {
+    if (clickedRun) {
+      setOptionsDisabled(true);
+      const startNode = grid[START_NODE_ROW][START_NODE_COL];
+      const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+      switch (algorithm) {
+        case 'DFS': {
+          const visitedNodes = dfsVisited(startNode, finishNode, grid);
+          const pathForDFS = dfsPath(finishNode);
+          setVisitedNodes(visitedNodes);
+          setPathNodes(pathNodes);
+          animateVisited(visitedNodes, pathForDFS);
+          break;
         }
-
-        root!.onmousedown = (e) => {
-            // breaks walls for  grid, do not remove
-            // e.stopImmediatePropagation(); (didn't allow elements to be placed on first click)
-            e.preventDefault();
-            this.setState({mouseIsPressed: true});
+        case 'BFS': {
+          const visitedNodes = bfsVisited(startNode, finishNode, grid);
+          const pathForBFS = bfsPath(finishNode);
+          setVisitedNodes(visitedNodes);
+          setPathNodes(pathNodes);
+          animateVisited(visitedNodes, pathForBFS);
+          break;
         }
-        root!.onmouseup = (e) => {
-            // breaks walls grid, do not remove
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            this.setState({mouseIsPressed: false});
+        case 'Dijkstra': {
+          const visitedNodes = dijkstraSP(startNode, finishNode, grid);
+          const pathNodes = shortestPath(finishNode);
+          setVisitedNodes(visitedNodes);
+          setPathNodes(pathNodes);
+          animateVisited(visitedNodes, pathNodes);
+          break;
         }
-
-        window.addEventListener('resize', () => {
-            this.resizeGrid();
-        }, true);
+      }
+      setClickedRun(false);
     }
+  }, [clickedRun])
 
-    resizeGrid() {
-        let COLS = this.state.cols;
-        let mainContentWidth = document.getElementById("main")!.offsetWidth;
-        let dimension = Math.floor(mainContentWidth / (COLS * 2.5)) + "px";
-        this.setState({
-            nodeStyle: {
-                width: dimension,
-                height: dimension
-            }
-        });
-    }
+  const getNewGridWithWallToggled = (grid: Node[][], row: number, col: number) => {
+    return update(grid, {
+      [row]: {[col]: {isWall: {$set: !grid[row][col].isWall}}}
+    });
+  }
 
-    showAlgorithms(e: React.MouseEvent) {
-        // ensures that you close menu when clicked again
-        console.log(this.state.showAlgorithms);
-        if (!this.state.showAlgorithms) {
-            console.log(this.state.showAlgorithms);
-            this.setState({showAlgorithms: true}, () => this.displayAlgorithms());
-            // not sure why this works but will figure out soon
-            // makes dropdown work magically!
-            e.stopPropagation();
-            document.addEventListener("click", this.closeAlgorithms);
+  const handleMouseDown = (row: number, col: number) => {
+    const newGrid = getNewGridWithWallToggled(grid, row, col);
+    setGrid(newGrid as Node[][]);
+    setMouseIsPressed(true);
+  }
+
+  const handleMouseEnter = (row: number, col: number) => {
+    if (!mouseIsPressed) return;
+    const newGrid = getNewGridWithWallToggled(grid, row, col);
+    setGrid(newGrid as Node[][]);
+  }
+
+  const mazeGeneration = () => {
+    clearGrid();
+    setOptionsDisabled(true);
+    setDropdownStyle(disabledButtonStyle);
+    // there has to be a timeout before generating the walls or else the walls will be generated instantly
+    // this is because the state of a node is updated rather than a class being added when loading in nodes
+    // this is just a simple fix, as it is a trivial issue
+    const WALL_ANIMATION_LENGTH = 5;
+    setTimeout(() => {
+      let {walls, newGrid} = recursiveDivision(getInitialGrid());
+      let animationLength = walls.length * WALL_ANIMATION_LENGTH;
+      // has to be done to update dom to have correct grid elements
+      setTimeout(() => {
+        setGrid(newGrid);
+      }, animationLength);
+      enableSettings(animationLength)
+      for (let i = 0; i < walls.length; i++) {
+        const v = walls[i];
+        // recursive division sets walls to true/false within the algorithm itself
+        // therefore, if a node is a wall, then turn add it to wall class properties
+        if (v.isWall) {
+          setTimeout(() => {
+            const nodeID = "node-" + v.row + "-" + v.col;
+            document.getElementById(nodeID)!.className = 'node node-wall';
+          }, i * WALL_ANIMATION_LENGTH)
         }
+      }
+    }, 100);
+  }
+
+  const animateVisited = (visitedNodes: Node[], pathNodes: Node[]) => {
+    let animationLength = (visitedNodes.length + pathNodes.length) * pathfindingSpeed;
+    setDropdownStyle(disabledButtonStyle);
+    enableSettings(animationLength);
+    // must be <= visitedNodes.length to ensure that the for loop has finished
+    for (let i = 0; i <= visitedNodes.length; i++) {
+      if (i === visitedNodes.length) {
+        setTimeout(() => {
+          animatePath(pathNodes);
+        }, i * pathfindingSpeed);
+      } else {
+        setTimeout(() => {
+          const node = visitedNodes[i];
+          const nodeID = "node-" + node.row + "-" + node.col;
+          document.getElementById(nodeID)!.className = 'node node-visited';
+        }, i * pathfindingSpeed);
+      }
+    }
+  }
+
+  const animatePath = (pathNodes: Node[]) => {
+    for (let i = 0; i < pathNodes.length; i++) {
+      setTimeout(() => {
+        const node = pathNodes[i];
+        const nodeID = "node-" + node.row + "-" + node.col;
+        document.getElementById(nodeID)!.className = 'node node-shortest-path';
+      }, i * pathfindingSpeed);
+    }
+  }
+
+  const enableSettings = (animationLength: number) => {
+    setTimeout(() => {
+      setOptionsDisabled(false);
+      setDropdownStyle(enabledButtonStyle);
+    }, animationLength);
+  }
+
+  const clearGrid = () => {
+    // clearing the actual grid itself
+    setGrid(getInitialGrid);
+
+    // clearing html class properties (for css)
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid[0].length; j++) {
+        const node = grid[i][j];
+        const nodeID = "node-" + node.row + "-" + node.col;
+        document.getElementById(nodeID)!.className = 'node';
+      }
     }
 
-    closeAlgorithms() {
-        this.setState({showAlgorithms: false}, () => this.displayAlgorithms());
-        document.removeEventListener("click", this.closeAlgorithms)
+    const startNode = grid[START_NODE_ROW][START_NODE_COL];
+    const startNodeID = 'node-' + startNode.row + '-' + startNode.col;
+    document.getElementById(startNodeID)!.className = 'node node-start';
+
+    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const finishNodeID = 'node-' + finishNode.row + '-' + finishNode.col;
+    document.getElementById(finishNodeID)!.className = 'node node-finish';
+  }
+
+  const getInitialGrid = () => {
+    const grid = [];
+    for (let row = 0; row < rows; row++) {
+      const currentRow = [];
+      for (let col = 0; col < cols; col++) {
+        currentRow.push(createNode(row, col));
+      }
+      grid.push(currentRow);
     }
+    return grid;
+  }
 
-    displayAlgorithms() {
-        if (this.state.showAlgorithms) {
-            this.dropdownSelection.current!.style.display = "block";
-            this.dropdownCaret.current!.style.transform = "rotate(180deg)";
-            this.dropdownCaret.current!.style.transition = "all 250ms linear";
-        } else {
-            this.dropdownSelection.current!.style.display = "none";
-            this.dropdownCaret.current!.style.transform = "rotate(0deg)";
-            this.dropdownCaret.current!.style.transition = "all 250ms linear";
-        }
-    }
-
-    changeAlgorithm(option: string) {
-        this.setState({algorithm: option});
-    }
-
-    runAlgorithm() {
-        this.setState({optionsDisabled: true}, () => {
-            switch (this.state.algorithm) {
-                case 'DFS':
-                    this.visualizeDFS();
-                    break;
-                case 'BFS':
-                    this.visualizeBFS();
-                    break;
-                case 'Dijkstra':
-                    this.visualizeDijkstra();
-                    break;
-            }
-        });
-    }
-
-    getNewGridWithWallToggled(grid: Node[][], row: number, col: number) {
-        return update(grid, {
-            [row]: {[col]: {isWall: {$set: !grid[row][col].isWall}}}
-        });
-    }
-
-    handleMouseDown(row: number, col: number) {
-        const newGrid = this.getNewGridWithWallToggled(this.state.grid, row, col);
-        this.setState({grid: newGrid, initialGrid: newGrid, mouseIsPressed: true});
-    }
-
-    handleMouseEnter(row: number, col: number) {
-        console.log(this.state.mouseIsPressed)
-        if (!this.state.mouseIsPressed) return;
-        const newGrid = this.getNewGridWithWallToggled(this.state.grid, row, col);
-        this.setState({grid: newGrid, initialGrid: newGrid});
-    }
-
-    handleMouseUp() {
-        this.setState({mouseIsPressed: false});
-    }
-
-
-    handleMouseLeave() {
-        this.setState({mouseIsPressed: false});
-    }
-
-    recursiveDivision() {
-        // works because of pass by value??? (results in more efficient results)
-        const wallsGrid = this.state.grid.slice();
-        let walls = recursiveDivision(wallsGrid);
-        let totalTime = 0;
-        for (let i = 0; i < walls.length; i++) {
-            const v = walls[i];
-            totalTime += 10;
-            setTimeout(() => {
-                const nodeID = "node-" + v.col + "-" + v.row;
-                document.getElementById(nodeID)!.className = 'node node-wall';
-            }, i * 10)
-        }
-    }
-
-    visualizeDFS() {
-        this.setState((state) => ({initialGrid: state.grid}));
-        const {grid} = this.state;
-        const startNode = grid[START_NODE_ROW][START_NODE_COL];
-        const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-        const visitedNodes = dfsVisited(startNode, finishNode, grid);
-        const pathForDFS = dfsPath(finishNode);
-        this.animateVisited(visitedNodes, pathForDFS);
-        // ensures the animation can be ran again once it is over
-        this.copyGrid();
-    }
-
-    visualizeBFS() {
-        this.setState((state) => ({initialGrid: state.grid}));
-        const {grid} = this.state;
-        const startNode = grid[START_NODE_ROW][START_NODE_COL];
-        const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-        const visitedNodes = bfsVisited(startNode, finishNode, grid);
-        const pathForBFS = bfsPath(finishNode);
-        this.animateVisited(visitedNodes, pathForBFS);
-        // ensures the animation can be ran again once it is over
-        this.copyGrid();
-    }
-
-    visualizeDijkstra() {
-        this.setState((state) => ({initialGrid: state.grid}));
-        const {grid} = this.state;
-        const startNode = grid[START_NODE_ROW][START_NODE_COL];
-        const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-        const visitedNodes = dijkstraSP(startNode, finishNode, grid);
-        const pathNodes = shortestPath(finishNode);
-        this.animateVisited(visitedNodes, pathNodes);
-        this.copyGrid();
-    }
-
-    animateVisited(visitedNodes: Node[], pathNodes: Node[]) {
-        for (let i = 0; i <= visitedNodes.length; i++) {
-            if (i === visitedNodes.length) {
-                setTimeout(() => {
-                    this.animatePath(pathNodes);
-                }, i * VISITED_NODES_SPEED);
-            } else {
-                setTimeout(() => {
-                    const node = visitedNodes[i];
-                    const nodeID = "node-" + node.col + "-" + node.row;
-                    document.getElementById(nodeID)!.className = 'node node-visited';
-                }, i * VISITED_NODES_SPEED);
-            }
-        }
-    }
-
-    animatePath(pathNodes: Node[]) {
-        for (let i = 0; i < pathNodes.length; i++) {
-            setTimeout(() => {
-                const node = pathNodes[i];
-                const nodeID = "node-" + node.col + "-" + node.row;
-                document.getElementById(nodeID)!.className = 'node node-shortest-path';
-            }, i * SHORTEST_PATH_SPEED);
-        }
-    }
-
-    copyGrid() {
-        const grid: Node[][] = [];
-        this.setState({grid: grid}, () => {
-            this.setState({grid: this.getCopyGrid()})
-        });
-    }
-
-    clearGrid() {
-        const grid: Node[][] = [];
-        this.setState({grid: grid}, () => {
-            this.setState({grid: this.getInitialGrid()})
-        });
-    }
-
-    getCopyGrid() {
-        const grid = [];
-        for (let row = 0; row < this.state.rows; row++) {
-            const currentRow = [];
-            for (let col = 0; col < this.state.cols; col++) {
-                if (this.state.initialGrid[row][col].isWall) {
-                    currentRow.push(this.state.initialGrid[row][col]);
-                } else {
-                    currentRow.push(createNode(col, row));
-                }
-            }
-            grid.push(currentRow);
-        }
-        return grid;
-    }
-
-    getInitialGrid() {
-        const grid = [];
-        for (let row = 0; row < this.state.rows; row++) {
-            const currentRow = [];
-            for (let col = 0; col < this.state.cols; col++) {
-                currentRow.push(createNode(col, row));
-            }
-            grid.push(currentRow);
-        }
-        return grid;
-    }
-
-    render() {
-        let nodes = this.state.grid.map((row) => {
-            return (
-                <div className={"grid-row"}>
-                    {row.map((node) => {
-                        const {row, col, isFinish, isStart, isWall} = node;
-                        return (
-                            <GridNode row={row} col={col} isStart={isStart} isFinish={isFinish} isWall={isWall}
-                                      onMouseDown={() => this.handleMouseDown(row, col)}
-                                      onMouseEnter={() => this.handleMouseEnter(row, col)}
-                                      onTouchMove={() => this.handleMouseEnter(row, col)}
-                                      style={this.state.nodeStyle}
-                            />
-                        )
-                    })}
-                </div>
-            )
-        })
-        return (
-            <main className={"main-sidebar"} id={"main"}>
-                <div className={"sidebar"}>
-                    <div className={"sidebar-settings"}>
-                        <div className={"sidebar-setting"}>
-                            <p> Choose an algorithm </p>
-
-                            <div className={"selection-dropdown"} onClick={this.showAlgorithms}>
-                                <div className={"current-option"}>
-                                    <p> {this.state.algorithm} </p>
-                                </div>
-
-                                <div className={"caret-down"}>
-                                    <i className="fas fa-caret-down" ref={this.dropdownCaret}> </i>
-                                </div>
-                            </div>
-                            <div className={"selection-options"} ref={this.dropdownSelection}>
-                                <ul>
-                                    {
-                                        options.map(option => (
-                                            <div onClick={() => this.changeAlgorithm(option)}
-                                                 key={option}> {option} </div>
-                                        ))
-                                    }
-                                </ul>
-                            </div>
-
-                            <button className={"sidebar-button"}
-                                    onClick={this.runAlgorithm}>
-                                Run
-                            </button>
-                        </div>
-
-                        <div className={"sidebar-setting"}>
-                            <p> Recursive Backtrack Maze </p>
-                            <button className={"sidebar-button"} onClick={() => this.recursiveDivision()}>
-                                Generate Maze
-                            </button>
-                        </div>
-                        <div className={"sidebar-setting"}>
-                            <p> Clear Grid </p>
-                            <button className={"sidebar-button"} onClick={() => this.clearGrid()}>
-                                Clear
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div className={"main-content"} id={"grid-wrapper"} onMouseLeave={() => this.handleMouseLeave()}>
-                    <div id={"grid"}>
-                        {nodes}
-                    </div>
-                </div>
-            </main>
-        )
-    }
-}
-
-function createNode(col: number, row: number) {
+  const createNode = (row: number, col: number) => {
     return {
-        col: col,
-        row: row,
-        isStart: row === START_NODE_ROW && col === START_NODE_COL,
-        isFinish: row === FINISH_NODE_ROW && col === FINISH_NODE_COL,
-        weight: Infinity,
-        isVisited: false,
-        isWall: false,
-        previousNode: null
+      row: row,
+      col: col,
+      isStart: row === START_NODE_ROW && col === START_NODE_COL,
+      isFinish: row === FINISH_NODE_ROW && col === FINISH_NODE_COL,
+      weight: Infinity,
+      isVisited: false,
+      isWall: false,
+      previousNode: null
     } as Node;
+  }
+
+  let nodes = grid.map((row) => {
+    return (
+      <div className={"grid-row"}>
+        {row.map((node) => {
+          const {row, col, isFinish, isStart, isWall} = node;
+          return (
+            <GridNode row={row} col={col} isStart={isStart} isFinish={isFinish} isWall={isWall}
+                      onMouseDown={() => handleMouseDown(row, col)}
+                      onMouseEnter={() => handleMouseEnter(row, col)}
+                      onTouchMove={() => handleMouseEnter(row, col)}
+                      style={nodeStyle}
+            />
+          )
+        })}
+      </div>
+    )
+  })
+  return (
+    <main className={"main-sidebar"} id={"main"}>
+      <div className={"sidebar"}>
+        <div className={"sidebar-settings"}>
+          <div className={"sidebar-setting"}>
+            <p> Choose an algorithm </p>
+
+            <div className={"selection-dropdown"} onClick={showAlgorithmsDropdown} style={dropdownStyle}>
+              <div className={"current-option"}>
+                <p> {algorithm} </p>
+              </div>
+
+              <div className={"caret-down"}>
+                <i className="fas fa-caret-down" ref={dropdownCaret}> </i>
+              </div>
+            </div>
+            <div className={"selection-options"} ref={dropdownSelection}>
+              <ul>
+                {
+                  options.map(option => (
+                    <div onClick={() => setAlgorithm(option)}
+                         key={option}> {option} </div>
+                  ))
+                }
+              </ul>
+            </div>
+
+            <AlgoButton buttonText={'Run'} disabled={optionsDisabled} onClick={() => setClickedRun(true)}/>
+          </div>
+
+          <AlgoButtonSetting settingDescription={'Recursive Backtrack Maze'} buttonText={'Generate Maze'}
+                             disabled={optionsDisabled} onClick={mazeGeneration}/>
+
+          <AlgoButtonSetting settingDescription={'Clear Grid'} buttonText={'Clear'}
+                             disabled={optionsDisabled} onClick={clearGrid}/>
+
+        </div>
+      </div>
+
+      <div className={"main-content"} id={"grid-wrapper"} onMouseLeave={() => setMouseIsPressed(false)}>
+        <div id={"grid"}>
+          {nodes}
+        </div>
+      </div>
+    </main>
+  );
 }
 
 export default PathfindingVisualizer;

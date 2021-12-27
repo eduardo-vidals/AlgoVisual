@@ -6,10 +6,10 @@ import {getMergeSortAnimations} from "./Algorithms/MergeSort";
 import {getQuickSortAnimations} from "./Algorithms/QuickSort";
 import {getHeapSortAnimations} from "./Algorithms/HeapSort";
 import {getSelectionSortAnimations} from "./Algorithms/SelectionSort";
-import {enabledSliderStyle, disabledSliderStyle} from "../Common/Styles";
 import AlgoButton from "../Common/AlgoButton";
 import AlgoButtonSetting from "../Common/Settings/AlgoButtonSetting";
 import AlgoSliderSetting from "../Common/Settings/AlgoSliderSetting";
+import {enabledButtonStyle, disabledButtonStyle} from "../Common/Styles";
 
 // This is the main color of the array bars.
 const PRIMARY_COLOR = '#98d6e8';
@@ -22,28 +22,6 @@ const options = ["Bubble Sort", "Insertion Sort", "Selection Sort", "Merge Sort"
 
 type Props = {};
 
-type State = {
-  arr: number[],
-  numberOfBars: number,
-  sortingSpeed: number,
-  sortingAlgorithm: string,
-  showSortingOptions: boolean,
-  optionsDisabled: boolean,
-  animationLength: number,
-  sliderStyle: any,
-  keepTimeout: boolean
-}
-
-const disabledColor = {
-  color: '#f5a0a0',
-  cursor: 'default'
-}
-
-const enabledColor = {
-  cursor: 'pointer',
-  color: '#fff'
-}
-
 function SortingVisualizer(props: Props) {
   const dropdownSelection = createRef<HTMLDivElement>();
   const dropdownCaret = createRef<HTMLDivElement>();
@@ -53,8 +31,7 @@ function SortingVisualizer(props: Props) {
   const [sortingAlgorithm, setSortingAlgorithm] = useState('Quick Sort');
   const [showSortingOptions, setShowSortingOptions] = useState(false);
   const [optionsDisabled, setOptionsDisabled] = useState(false);
-  const [sliderStyle, setSliderStyle] = useState<any>(enabledSliderStyle);
-  const [dropdownStyle, setDropdownStyle] = useState(enabledColor);
+  const [dropdownStyle, setDropdownStyle] = useState(enabledButtonStyle);
 
   useEffect(() => {
     resetArray();
@@ -257,28 +234,14 @@ function SortingVisualizer(props: Props) {
 
   const runSortingAlgorithm = () => {
     setOptionsDisabled(true);
-    const buttons = document.getElementsByClassName('sidebar-button');
-    for (let i = 0; i < buttons.length; i++) {
-      let button = buttons[i] as HTMLButtonElement;
-      button.style.color = "#f5a0a0";
-      button.style.cursor = "revert";
-    }
-    setSliderStyle(disabledSliderStyle);
-    setDropdownStyle(disabledColor);
+    setDropdownStyle(disabledButtonStyle);
   }
 
   // enable settings once the the animation is over
   const enableSettings = (animationLength: number) => {
     setTimeout(() => {
       setOptionsDisabled(false);
-      setSliderStyle(enabledSliderStyle);
-      setDropdownStyle(enabledColor);
-      const buttons = document.getElementsByClassName('sidebar-button');
-      for (let i = 0; i < buttons.length; i++) {
-        let button = buttons[i] as HTMLButtonElement;
-        button.style.color = "#fff";
-        button.style.cursor = "pointer";
-      }
+      setDropdownStyle(enabledButtonStyle);
     }, animationLength);
   }
 
@@ -294,14 +257,14 @@ function SortingVisualizer(props: Props) {
       <div className={"sidebar-wrapper"}>
         <div className={"sidebar"}>
           <div className={"sidebar-settings"}>
-            <AlgoSliderSetting settingDescription={"Control number of bars"} sliderStyle={sliderStyle}
+            <AlgoSliderSetting settingDescription={"Control number of bars"}
                                statusDescription={numberOfBars + " bars"}
-                               optionsDisabled={optionsDisabled}
+                               disabled={optionsDisabled}
                                onChange={barsLimit} defaultValue={100} min={10} max={250}/>
 
-            <AlgoSliderSetting settingDescription={"Control visualizer speed"} sliderStyle={sliderStyle}
+            <AlgoSliderSetting settingDescription={"Control visualizer speed"}
                                statusDescription={sortingSpeed + " ms"}
-                               optionsDisabled={optionsDisabled}
+                               disabled={optionsDisabled}
                                onChange={sliderSpeed} defaultValue={1} min={1} max={100}/>
 
             <div className={"sidebar-setting"}>
@@ -327,12 +290,12 @@ function SortingVisualizer(props: Props) {
                 </ul>
               </div>
 
-              <AlgoButton buttonText={"Run"} optionDisabled={optionsDisabled}
+              <AlgoButton buttonText={"Run"} disabled={optionsDisabled}
                           onClick={runSortingAlgorithm}/>
             </div>
 
             <AlgoButtonSetting settingDescription={"Reset the array"} buttonText={"Reset"}
-                               optionDisabled={optionsDisabled} onClick={resetArray}/>
+                               disabled={optionsDisabled} onClick={resetArray}/>
           </div>
         </div>
       </div>

@@ -1,28 +1,32 @@
-import React, {createRef} from "react";
+import React from "react";
+
+import {enabledButtonStyle, disabledButtonStyle} from "./Styles";
 
 type Props = {
   buttonText: String
-  optionDisabled: boolean,
+  disabled: boolean,
   onClick: React.MouseEventHandler<HTMLButtonElement>,
 };
 
 function AlgoButton(props: Props) {
-  const {buttonText, optionDisabled, onClick} = props;
+  const {buttonText, disabled, onClick} = props;
 
   const buttonEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!optionDisabled) {
+    if (!disabled) {
       e.currentTarget.style.color = "#98d6e8";
     }
   }
 
   const buttonLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!optionDisabled) {
+    if (!disabled) {
       e.currentTarget.style.color = "#fff";
     }
   }
 
+  const buttonStyle = disabled ? disabledButtonStyle : enabledButtonStyle;
+
   return (
-    <button disabled={optionDisabled} className={"sidebar-button"} onClick={onClick}
+    <button disabled={disabled} className={"sidebar-button"} onClick={onClick} style={buttonStyle}
             onMouseEnter={buttonEnter} onMouseLeave={buttonLeave}>
       {buttonText}
     </button>

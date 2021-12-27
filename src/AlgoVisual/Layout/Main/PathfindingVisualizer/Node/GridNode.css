@@ -77,8 +77,8 @@
     animation-name: shortestPath, idleShortestPath;
     background-color: #fffe6a;
     border: 1px solid #fffe6a;
-    animation-duration: 1.5s, 3s;
-    animation-timing-function: ease-out, ease-in;
+    animation-duration: 1.5s, 6s;
+    animation-timing-function: ease-out, linear;
     animation-direction: alternate, alternate;
     animation-iteration-count: 1, infinite;
     animation-fill-mode: forwards, forwards;

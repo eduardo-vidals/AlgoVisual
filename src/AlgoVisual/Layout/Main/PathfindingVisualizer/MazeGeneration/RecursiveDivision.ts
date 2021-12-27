@@ -4,8 +4,7 @@ export function recursiveDivision(grid: Node[][]) {
     const walls: Node[] = [];
     addOuterWalls(grid, walls);
     addInnerWalls(true, 1, grid[0].length - 2, 1, grid.length - 2, grid, walls);
-    addOuterWalls(grid, walls)
-    return walls;
+    return {walls, newGrid: grid};
 }
 
 function addOuterWalls(grid: Node[][], walls: Node[]) {
@@ -46,7 +45,12 @@ function addInnerWalls(h: boolean, minX: number, maxX: number, minY: number, max
 
 function addHWall(minX: number, maxX: number, y: number, grid: Node[][], walls: Node[]) {
     let hole = Math.floor(randomNumber(minX, maxX) / 2) * 2 + 1;
+
     for (let i = minX; i <= maxX; i++) {
+        if (y === 0){
+            continue;
+        }
+
         if (i === hole){
             grid[y][i].isWall = false;
         } else {
@@ -60,6 +64,10 @@ function addVWall(minY: number, maxY: number, x: number, grid: Node[][], walls: 
     let hole = Math.floor(randomNumber(minY, maxY) / 2) * 2 + 1;
 
     for (let i = minY; i <= maxY; i++) {
+        if (x === 0){
+            continue;
+        }
+
         if (i === hole){
             grid[i][x].isWall = false;
         } else {
