@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
+// import {RouteComponentProps, withRouter} from 'react-router-dom';
 
-interface Props extends RouteComponentProps<any> { }
+interface Props { }
 
 function ScrollToTopOnNewPage(props: Props) {
+    /*
     const {history} = props;
     useEffect(() => {
         const unlisten = history.listen(() => {
@@ -13,8 +14,8 @@ function ScrollToTopOnNewPage(props: Props) {
             unlisten();
         }
     }, []);
-
+     */
     return null;
 }
 
-export default withRouter(ScrollToTopOnNewPage);
+export default (ScrollToTopOnNewPage);

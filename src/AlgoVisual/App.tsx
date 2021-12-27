@@ -4,7 +4,7 @@ import Header from "./Layout/Header/Header";
 import Footer from "./Layout/Footer/Footer";
 import Home from "./Layout/Main/Home/Home";
 import Documentation from "./Layout/Main/Documentation/Layout/Documentation";
-import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import SortingVisualizer from "./Layout/Main/SortingVisualizer/SortingVisualizer";
 import PathfindingVisualizer from "./Layout/Main/PathfindingVisualizer/PathfindingVisualizer";
 
@@ -13,27 +13,18 @@ function App() {
     <Router>
       <div id={"app-wrapper"}>
         <Header/>
-        <Switch>
-          <Route exact path="/AlgoVisual">
-            <Home/>
-          </Route>
+        <Routes>
+          <Route path="/AlgoVisual" element={<Home/>}/>
 
-          <Route exact path="/AlgoVisual/sorting">
-            <SortingVisualizer/>
-          </Route>
+          <Route path="/AlgoVisual/sorting" element={<SortingVisualizer/>}/>
 
-          <Route exact path="/AlgoVisual/pathfinding">
-            <PathfindingVisualizer/>
-          </Route>
+          <Route path="/AlgoVisual/pathfinding" element={<PathfindingVisualizer/>}/>
 
-          <Route path="/AlgoVisual/documentation">
-            <Documentation/>
-          </Route>
+          <Route path="/AlgoVisual/documentation" element={<Documentation/>}/>
 
-          <Route path="/AlgoVisual/about">
+          <Route path="/AlgoVisual/about"/>
 
-          </Route>
-        </Switch>
+        </Routes>
         <Footer/>
       </div>
     </Router>

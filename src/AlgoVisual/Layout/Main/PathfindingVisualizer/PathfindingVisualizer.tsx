@@ -40,24 +40,21 @@ function PathfindingVisualizer() {
     resizeGrid();
     setGrid(getInitialGrid);
     let root = document.getElementById("grid-wrapper");
-    let total = 0;
     root!.ontouchmove = (e) => {
       // why does this work??? is this a reference to state grid??? is it cause of pass by val??
       const wallsGrid: Node[][] = grid.slice();
       for (let i = 0; i < e.changedTouches.length; i++) {
         let element = e.changedTouches[i];
         let v = document.elementFromPoint(element.clientX, element.clientY);
-        if (v != null) {
-          if (v.classList.contains("node") && (!v.classList.contains("node-start") && (!v.classList.contains("node-finish")))) {
-            const line = v.id.split("-");
-            const col = parseInt(line[1]);
-            const row = parseInt(line[2]);
-            total += 10;
-            v.className = 'node node-wall';
-            // results in more efficient results...why?
-            // maybe cause pass by value returns a reference (like in java)????
-            wallsGrid[row][col].isWall = !wallsGrid[row][col].isWall;
-          }
+        if (v !== null && v.classList.contains("node") && (!v.classList.contains("node-start") && (!v.classList.contains("node-finish")))) {
+          const line = v.id.split("-");
+          const row = parseInt(line[1]);
+          const col = parseInt(line[2]);
+          v.className = 'node node-wall';
+          getNewGridWithWallToggled(grid, row, col);
+          // results in more efficient results...why?
+          // maybe cause pass by value returns a reference (like in java)????
+          // wallsGrid[row][col].isWall = !wallsGrid[row][col].isWall;
         }
       }
     }
