@@ -46,7 +46,7 @@ function GridNode(props: Props) {
     onTouchMove,
     onTouchEnd
   } = props;
-  const className = isFinish ? 'node node-finish' : isStart ? 'node node-start' : isWall ? 'node node-wall' : 'node';
+  const className = isFinish ? 'node node-finish' : isStart ? 'node node-start' : 'node'
   const nodeID = "node-" + row + "-" + col
 
   return (

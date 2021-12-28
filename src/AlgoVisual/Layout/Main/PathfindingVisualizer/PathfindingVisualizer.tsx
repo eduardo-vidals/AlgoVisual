@@ -13,11 +13,6 @@ import AlgoButton from "../Common/AlgoButton";
 
 const options = ["DFS", "BFS", "Dijkstra", "A*"];
 
-const START_NODE_ROW = 3;
-const START_NODE_COL = 3;
-const FINISH_NODE_ROW = 27;
-const FINISH_NODE_COL = 27;
-
 function PathfindingVisualizer() {
   const dropdownSelection = createRef<HTMLDivElement>();
   const dropdownCaret = createRef<HTMLDivElement>();
@@ -35,6 +30,12 @@ function PathfindingVisualizer() {
   const [dropdownStyle, setDropdownStyle] = useState(enabledButtonStyle);
   const [pathfindingSpeed, setPathfindingSpeed] = useState(20);
   const [clickedRun, setClickedRun] = useState(false);
+  const [startRow, setStartRow] = useState(3);
+  const [startCol, setStartCol] = useState(3);
+  const [finishRow, setFinishRow] = useState(27);
+  const [finishCol, setFinishCol] = useState(27);
+  const [clickedOnStartNode, setClickedOnStartNode] = useState(false);
+  const [clickedOnFinishNode, setClickedOnFinishNode] = useState(false);
 
   useEffect(() => {
     resizeGrid();
@@ -46,15 +47,14 @@ function PathfindingVisualizer() {
       for (let i = 0; i < e.changedTouches.length; i++) {
         let element = e.changedTouches[i];
         let v = document.elementFromPoint(element.clientX, element.clientY);
-        if (v !== null && v.classList.contains("node") && (!v.classList.contains("node-start") && (!v.classList.contains("node-finish")))) {
+        if (v && v.classList.contains("node") && (!v.classList.contains("node-start") && (!v.classList.contains("node-finish")))) {
           const line = v.id.split("-");
           const row = parseInt(line[1]);
           const col = parseInt(line[2]);
           v.className = 'node node-wall';
-          getNewGridWithWallToggled(grid, row, col);
           // results in more efficient results...why?
           // maybe cause pass by value returns a reference (like in java)????
-          // wallsGrid[row][col].isWall = !wallsGrid[row][col].isWall;
+          wallsGrid[row][col].isWall = !wallsGrid[row][col].isWall;
         }
       }
     }
@@ -65,12 +65,16 @@ function PathfindingVisualizer() {
       e.preventDefault();
       setMouseIsPressed(true);
     }
+    /*
     root!.onmouseup = (e) => {
       // breaks walls grid, do not remove
       e.preventDefault();
       e.stopImmediatePropagation();
       setMouseIsPressed(false);
+      setClickedOnStartNode(false);
+      setClickedOnFinishNode(false);
     }
+     */
 
     window.addEventListener('resize', () => {
       resizeGrid();
@@ -120,8 +124,8 @@ function PathfindingVisualizer() {
   useEffect(() => {
     if (clickedRun) {
       setOptionsDisabled(true);
-      const startNode = grid[START_NODE_ROW][START_NODE_COL];
-      const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+      const startNode = grid[startRow][startCol];
+      const finishNode = grid[finishRow][finishCol];
       switch (algorithm) {
         case 'DFS': {
           const visitedNodes = dfsVisited(startNode, finishNode, grid);
@@ -150,7 +154,65 @@ function PathfindingVisualizer() {
       }
       setClickedRun(false);
     }
-  }, [clickedRun])
+  }, [clickedRun]);
+
+  // create walls on first click
+  const handleMouseDown = (row: number, col: number) => {
+    if (optionsDisabled) return;
+
+    const nodeID = "node-" + row + "-" + col;
+    const node = grid[row][col];
+    const className = node.isStart ? 'node node-start' : node.isFinish ? 'node node-finish' : node.isWall ? 'node' : 'node-wall'
+    document.getElementById(nodeID)!.className = className;
+
+    if (node.isStart) {
+      setClickedOnStartNode(true);
+    }
+
+    if (node.isFinish){
+      setClickedOnFinishNode(true);
+    }
+
+    if (node.isStart || node.isFinish) return;
+    const newGrid = getNewGridWithWallToggled(grid, row, col);
+    setGrid(newGrid as Node[][]);
+  }
+
+  // create walls on drag when mouse is clicked
+  const handleMouseEnter = (row: number, col: number) => {
+    if (!mouseIsPressed || optionsDisabled) return;
+    const nodeID = "node-" + row + "-" + col;
+    const node = grid[row][col];
+
+    // must be made in seperate inner if statements to ensure the statements ends and doesn't run the next if statements
+    if (clickedOnStartNode) {
+      if (!node.isWall && !node.isFinish){
+        const prevStartNodeID = 'node-' + startRow + '-' + startCol;
+        document.getElementById(prevStartNodeID)!.className = 'node';
+        updateStartNode(row, col);
+        document.getElementById(nodeID)!.className = 'node node-start';
+      }
+      return;
+    }
+
+    // must be made in seperate inner if statements to ensure the statements ends and doesn't run the next if statements
+    if (clickedOnFinishNode) {
+      if (!node.isWall && !node.isStart){
+        const prevStartNodeID = 'node-' + finishRow + '-' + finishCol;
+        document.getElementById(prevStartNodeID)!.className = 'node';
+        updateFinishNode(row, col);
+        document.getElementById(nodeID)!.className = 'node node-finish';
+      }
+      return;
+    }
+
+    // otherwise, fill the walls up, ensures that start/finish nodes cannnot be filled up
+    if (!node.isStart && !node.isFinish) {
+      document.getElementById(nodeID)!.className = node.isWall ? 'node' : 'node-wall';
+      const newGrid = getNewGridWithWallToggled(grid, row, col);
+      setGrid(newGrid as Node[][]);
+    }
+  }
 
   const getNewGridWithWallToggled = (grid: Node[][], row: number, col: number) => {
     return update(grid, {
@@ -158,46 +220,45 @@ function PathfindingVisualizer() {
     });
   }
 
-  const handleMouseDown = (row: number, col: number) => {
-    const newGrid = getNewGridWithWallToggled(grid, row, col);
-    setGrid(newGrid as Node[][]);
-    setMouseIsPressed(true);
+  const updateStartNode = (row: number, col: number) => {
+    setStartRow(row);
+    setStartCol(col);
   }
 
-  const handleMouseEnter = (row: number, col: number) => {
-    if (!mouseIsPressed) return;
-    const newGrid = getNewGridWithWallToggled(grid, row, col);
-    setGrid(newGrid as Node[][]);
+  const updateFinishNode = (row: number, col: number) => {
+    setFinishRow(row);
+    setFinishCol(col);
   }
 
   const mazeGeneration = () => {
-    clearGrid();
     setOptionsDisabled(true);
+    setGrid(getInitialGrid);
+    clearGrid();
     setDropdownStyle(disabledButtonStyle);
     // there has to be a timeout before generating the walls or else the walls will be generated instantly
     // this is because the state of a node is updated rather than a class being added when loading in nodes
     // this is just a simple fix, as it is a trivial issue
     const WALL_ANIMATION_LENGTH = 5;
+    let {walls, mazeGrid} = recursiveDivision(getInitialGrid());
+    let animationLength = walls.length * WALL_ANIMATION_LENGTH;
+
+    // update grid with new walls grid
     setTimeout(() => {
-      let {walls, newGrid} = recursiveDivision(getInitialGrid());
-      let animationLength = walls.length * WALL_ANIMATION_LENGTH;
-      // has to be done to update dom to have correct grid elements
-      setTimeout(() => {
-        setGrid(newGrid);
-      }, animationLength);
-      enableSettings(animationLength)
-      for (let i = 0; i < walls.length; i++) {
-        const v = walls[i];
-        // recursive division sets walls to true/false within the algorithm itself
-        // therefore, if a node is a wall, then turn add it to wall class properties
-        if (v.isWall) {
-          setTimeout(() => {
-            const nodeID = "node-" + v.row + "-" + v.col;
-            document.getElementById(nodeID)!.className = 'node node-wall';
-          }, i * WALL_ANIMATION_LENGTH)
-        }
+      setGrid(mazeGrid);
+    }, animationLength);
+
+    enableSettings(animationLength)
+    for (let i = 0; i < walls.length; i++) {
+      const v = walls[i];
+      // recursive division sets walls to true/false within the algorithm itself
+      // therefore, if a node is a wall, then turn add it to wall class properties
+      if (v.isWall) {
+        setTimeout(() => {
+          const nodeID = "node-" + v.row + "-" + v.col;
+          document.getElementById(nodeID)!.className = 'node node-wall';
+        }, i * WALL_ANIMATION_LENGTH)
       }
-    }, 100);
+    }
   }
 
   const animateVisited = (visitedNodes: Node[], pathNodes: Node[]) => {
@@ -240,6 +301,8 @@ function PathfindingVisualizer() {
   const clearGrid = () => {
     // clearing the actual grid itself
     setGrid(getInitialGrid);
+    setPathNodes([]);
+    setVisitedNodes([]);
 
     // clearing html class properties (for css)
     for (let i = 0; i < grid.length; i++) {
@@ -250,11 +313,11 @@ function PathfindingVisualizer() {
       }
     }
 
-    const startNode = grid[START_NODE_ROW][START_NODE_COL];
+    const startNode = grid[startRow][startCol];
     const startNodeID = 'node-' + startNode.row + '-' + startNode.col;
     document.getElementById(startNodeID)!.className = 'node node-start';
 
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const finishNode = grid[finishRow][finishCol];
     const finishNodeID = 'node-' + finishNode.row + '-' + finishNode.col;
     document.getElementById(finishNodeID)!.className = 'node node-finish';
   }
@@ -264,22 +327,44 @@ function PathfindingVisualizer() {
     for (let row = 0; row < rows; row++) {
       const currentRow = [];
       for (let col = 0; col < cols; col++) {
-        currentRow.push(createNode(row, col));
+        currentRow.push(createNode(row, col, false));
       }
       grid.push(currentRow);
     }
     return grid;
   }
 
-  const createNode = (row: number, col: number) => {
+  // used for when the start/finish nodes are moved, ensures that the grid is updated with correct values for
+  // isStart and isFinish
+  const getUpdatedGrid = () => {
+    const updatedGrid = [];
+    for (let row = 0; row < rows; row++) {
+      const currentRow = [];
+      for (let col = 0; col < cols; col++) {
+        const node = grid[row][col];
+        node.isWall ? currentRow.push(createNode(row, col, true)) : currentRow.push(createNode(row, col, false));
+      }
+      updatedGrid.push(currentRow);
+    }
+    return updatedGrid;
+  }
+
+  const onMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+    setGrid(getUpdatedGrid);
+    setMouseIsPressed(false);
+    setClickedOnStartNode(false);
+    setClickedOnFinishNode(false);
+  }
+
+  const createNode = (row: number, col: number, wall: boolean) => {
     return {
       row: row,
       col: col,
-      isStart: row === START_NODE_ROW && col === START_NODE_COL,
-      isFinish: row === FINISH_NODE_ROW && col === FINISH_NODE_COL,
+      isStart: row === startRow && col === startCol,
+      isFinish: row === finishRow && col === finishCol,
       weight: Infinity,
       isVisited: false,
-      isWall: false,
+      isWall: wall,
       previousNode: null
     } as Node;
   }
@@ -340,7 +425,8 @@ function PathfindingVisualizer() {
         </div>
       </div>
 
-      <div className={"main-content"} id={"grid-wrapper"} onMouseLeave={() => setMouseIsPressed(false)}>
+      <div className={"main-content"} id={"grid-wrapper"} onMouseUp={(e) => onMouseUp(e)}
+           onMouseLeave={() => setMouseIsPressed(false)}>
         <div id={"grid"}>
           {nodes}
         </div>
