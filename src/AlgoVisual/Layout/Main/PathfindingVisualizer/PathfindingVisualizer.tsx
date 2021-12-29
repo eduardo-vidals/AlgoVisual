@@ -10,6 +10,8 @@ import {recursiveDivision} from "./MazeGeneration/RecursiveDivision";
 import AlgoButtonSetting from "../Common/Settings/AlgoButtonSetting";
 import {disabledButtonStyle, enabledButtonStyle} from "../Common/Styles";
 import AlgoButton from "../Common/AlgoButton";
+import AlgoSliderSetting from "../Common/Settings/AlgoSliderSetting";
+import {AStar} from "./Algorithms/AStar";
 
 const options = ["DFS", "BFS", "Dijkstra", "A*"];
 
@@ -18,10 +20,11 @@ function PathfindingVisualizer() {
   const dropdownCaret = createRef<HTMLDivElement>();
 
   const [grid, setGrid] = useState<Node[][]>([]);
+  const [gridBeforeAnimation, setGridBeforeAnimation] = useState<Node[][]>([]);
   const [mouseIsPressed, setMouseIsPressed] = useState(false);
   const [rows, setRows] = useState(31);
   const [cols, setCols] = useState(31);
-  const [algorithm, setAlgorithm] = useState("Dijkstra");
+  const [algorithm, setAlgorithm] = useState("A*");
   const [showAlgorithms, setShowAlgorithms] = useState(false);
   const [optionsDisabled, setOptionsDisabled] = useState(false);
   const [nodeStyle, setNodeStyle] = useState({width: "20px", height: "20px"});
@@ -36,7 +39,9 @@ function PathfindingVisualizer() {
   const [finishCol, setFinishCol] = useState(27);
   const [clickedOnStartNode, setClickedOnStartNode] = useState(false);
   const [clickedOnFinishNode, setClickedOnFinishNode] = useState(false);
+  const [showClearPath, setShowClearPath] = useState(false);
 
+  // trigger before mounting anything to DOM
   useEffect(() => {
     resizeGrid();
     setGrid(getInitialGrid);
@@ -81,6 +86,7 @@ function PathfindingVisualizer() {
     }, true);
   }, [])
 
+  // resizes the grid based on the resize event listener
   const resizeGrid = () => {
     let COLS = cols;
     let mainContentWidth = document.getElementById("main")!.offsetWidth;
@@ -88,8 +94,9 @@ function PathfindingVisualizer() {
     setNodeStyle({width: dimension, height: dimension})
   }
 
+  // styles for display algorithms dropdown, based on whether it's shown or not
   useEffect(() => {
-    displayAlgorithms();
+    displayAlgorithmsDropdown();
   }, [showAlgorithms])
 
   const showAlgorithmsDropdown = (e: React.MouseEvent) => {
@@ -108,7 +115,7 @@ function PathfindingVisualizer() {
     document.removeEventListener("click", closeAlgorithmsDropdown)
   }
 
-  const displayAlgorithms = () => {
+  const displayAlgorithmsDropdown = () => {
     if (showAlgorithms) {
       dropdownSelection.current!.style.display = "block";
       dropdownCaret.current!.style.transform = "rotate(180deg)";
@@ -120,7 +127,15 @@ function PathfindingVisualizer() {
     }
   }
 
-  // run algorithms and navbar settings when options get disabled (aka algorithms is being ran)d
+  // once the options are disabled, ensure that grid is updated to use any updated nodes
+  // such as modified start/finish nodes
+  useEffect(() => {
+    if (optionsDisabled) {
+      setGrid(getUpdatedGrid);
+    }
+  }, [optionsDisabled])
+
+  // run algorithms when run is clicked, necessary settings such as disabling styles are also configured here
   useEffect(() => {
     if (clickedRun) {
       setOptionsDisabled(true);
@@ -146,6 +161,16 @@ function PathfindingVisualizer() {
         case 'Dijkstra': {
           const visitedNodes = dijkstraSP(startNode, finishNode, grid);
           const pathNodes = shortestPath(finishNode);
+          console.log(pathNodes.length);
+          setVisitedNodes(visitedNodes);
+          setPathNodes(pathNodes);
+          animateVisited(visitedNodes, pathNodes);
+          break;
+        }
+        case 'A*': {
+          const {visitedNodes, pathNodes} = AStar(startNode, finishNode, grid);
+          console.log(grid);
+          console.log(pathNodes.length);
           setVisitedNodes(visitedNodes);
           setPathNodes(pathNodes);
           animateVisited(visitedNodes, pathNodes);
@@ -156,37 +181,46 @@ function PathfindingVisualizer() {
     }
   }, [clickedRun]);
 
-  // create walls on first click
+  // when you click, update the grid to clear visited/path styles and ensures that clear path option is not shown
+  useEffect(() => {
+    if (mouseIsPressed && !optionsDisabled) {
+      setGrid(getUpdatedGrid);
+      setShowClearPath(false);
+    }
+  }, [mouseIsPressed])
+
+  // handles necessary logic on first click of a node within the grid
   const handleMouseDown = (row: number, col: number) => {
-    if (optionsDisabled) return;
+    if (optionsDisabled || !mouseIsPressed) return;
 
     const nodeID = "node-" + row + "-" + col;
     const node = grid[row][col];
-    const className = node.isStart ? 'node node-start' : node.isFinish ? 'node node-finish' : node.isWall ? 'node' : 'node-wall'
+    const className = node.isStart ? 'node node-start' : node.isFinish ? 'node node-finish' : node.isWall ? 'node' : 'node node-wall'
     document.getElementById(nodeID)!.className = className;
 
     if (node.isStart) {
       setClickedOnStartNode(true);
     }
 
-    if (node.isFinish){
+    if (node.isFinish) {
       setClickedOnFinishNode(true);
     }
 
+    // ensures a wall is only toggled if it isn't a start/finish noded
     if (node.isStart || node.isFinish) return;
     const newGrid = getNewGridWithWallToggled(grid, row, col);
     setGrid(newGrid as Node[][]);
   }
 
-  // create walls on drag when mouse is clicked
+  // handles logic for when mouse is moved within the grid
   const handleMouseEnter = (row: number, col: number) => {
     if (!mouseIsPressed || optionsDisabled) return;
     const nodeID = "node-" + row + "-" + col;
     const node = grid[row][col];
 
-    // must be made in seperate inner if statements to ensure the statements ends and doesn't run the next if statements
+    // must be made in seperate inner if statements to ensure the statements ends and the next if statements aren't ran
     if (clickedOnStartNode) {
-      if (!node.isWall && !node.isFinish){
+      if (!node.isWall && !node.isFinish) {
         const prevStartNodeID = 'node-' + startRow + '-' + startCol;
         document.getElementById(prevStartNodeID)!.className = 'node';
         updateStartNode(row, col);
@@ -195,9 +229,9 @@ function PathfindingVisualizer() {
       return;
     }
 
-    // must be made in seperate inner if statements to ensure the statements ends and doesn't run the next if statements
+    // must be made in seperate inner if statements to ensure the statements ends and the next if statements aren't ran
     if (clickedOnFinishNode) {
-      if (!node.isWall && !node.isStart){
+      if (!node.isWall && !node.isStart) {
         const prevStartNodeID = 'node-' + finishRow + '-' + finishCol;
         document.getElementById(prevStartNodeID)!.className = 'node';
         updateFinishNode(row, col);
@@ -208,28 +242,32 @@ function PathfindingVisualizer() {
 
     // otherwise, fill the walls up, ensures that start/finish nodes cannnot be filled up
     if (!node.isStart && !node.isFinish) {
-      document.getElementById(nodeID)!.className = node.isWall ? 'node' : 'node-wall';
+      document.getElementById(nodeID)!.className = node.isWall ? 'node' : 'node node-wall';
       const newGrid = getNewGridWithWallToggled(grid, row, col);
       setGrid(newGrid as Node[][]);
     }
   }
 
+  // returns grid with updated wall configuration
   const getNewGridWithWallToggled = (grid: Node[][], row: number, col: number) => {
     return update(grid, {
       [row]: {[col]: {isWall: {$set: !grid[row][col].isWall}}}
     });
   }
 
+  // helper method for updating position of start node
   const updateStartNode = (row: number, col: number) => {
     setStartRow(row);
     setStartCol(col);
   }
 
+  // helper method for updating position of finish node
   const updateFinishNode = (row: number, col: number) => {
     setFinishRow(row);
     setFinishCol(col);
   }
 
+  // generates a maze using a recursive backtrack maze algorithm
   const mazeGeneration = () => {
     setOptionsDisabled(true);
     setGrid(getInitialGrid);
@@ -259,12 +297,15 @@ function PathfindingVisualizer() {
         }, i * WALL_ANIMATION_LENGTH)
       }
     }
+    setShowClearPath(false);
   }
 
+
+  // animates visited nodes
   const animateVisited = (visitedNodes: Node[], pathNodes: Node[]) => {
     let animationLength = (visitedNodes.length + pathNodes.length) * pathfindingSpeed;
     setDropdownStyle(disabledButtonStyle);
-    enableSettings(animationLength);
+    enableSettingsClearPath(animationLength);
     // must be <= visitedNodes.length to ensure that the for loop has finished
     for (let i = 0; i <= visitedNodes.length; i++) {
       if (i === visitedNodes.length) {
@@ -281,6 +322,7 @@ function PathfindingVisualizer() {
     }
   }
 
+  // animates the path of a searching algorithm
   const animatePath = (pathNodes: Node[]) => {
     for (let i = 0; i < pathNodes.length; i++) {
       setTimeout(() => {
@@ -291,6 +333,7 @@ function PathfindingVisualizer() {
     }
   }
 
+  // enables settings after a certain period of time
   const enableSettings = (animationLength: number) => {
     setTimeout(() => {
       setOptionsDisabled(false);
@@ -298,9 +341,20 @@ function PathfindingVisualizer() {
     }, animationLength);
   }
 
+  // enables settings after a certain period of time and enables the clear path option
+  const enableSettingsClearPath = (animationLength: number) => {
+    setTimeout(() => {
+      setOptionsDisabled(false);
+      setDropdownStyle(enabledButtonStyle);
+      setShowClearPath(true);
+    }, animationLength);
+  }
+
+  // clears grid to initial settings, keeps the changed state of start/finish nodes if position was changed
   const clearGrid = () => {
     // clearing the actual grid itself
     setGrid(getInitialGrid);
+    setShowClearPath(false);
     setPathNodes([]);
     setVisitedNodes([]);
 
@@ -322,6 +376,7 @@ function PathfindingVisualizer() {
     document.getElementById(finishNodeID)!.className = 'node node-finish';
   }
 
+  // initializes grid to an empty grid
   const getInitialGrid = () => {
     const grid = [];
     for (let row = 0; row < rows; row++) {
@@ -334,14 +389,16 @@ function PathfindingVisualizer() {
     return grid;
   }
 
-  // used for when the start/finish nodes are moved, ensures that the grid is updated with correct values for
-  // isStart and isFinish
+  // used for when the start/finish nodes are moved, ensures that the grid is updated with correct values
+  // for isStart and isFinish, also ensures walls are still kept
   const getUpdatedGrid = () => {
     const updatedGrid = [];
     for (let row = 0; row < rows; row++) {
       const currentRow = [];
       for (let col = 0; col < cols; col++) {
         const node = grid[row][col];
+        const nodeID = "node-" + node.row + "-" + node.col;
+        document.getElementById(nodeID)!.className = node.isStart ? 'node node-start' : node.isFinish ? 'node node-finish' : node.isWall ? 'node node-wall' : 'node';
         node.isWall ? currentRow.push(createNode(row, col, true)) : currentRow.push(createNode(row, col, false));
       }
       updatedGrid.push(currentRow);
@@ -349,13 +406,43 @@ function PathfindingVisualizer() {
     return updatedGrid;
   }
 
+  // ensures that logic for clicking nodes is reset upon finishing a click within the grid
   const onMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
-    setGrid(getUpdatedGrid);
+    e.nativeEvent.preventDefault();
+    e.nativeEvent.stopImmediatePropagation();
     setMouseIsPressed(false);
+    setClickedOnStartNode(false);
+    setClickedOnFinishNode(false);
+    setGrid(getUpdatedGrid);
+    setShowClearPath(false);
+  }
+
+  // ensures that logic for clicking nodes is reset upon leaving the grid, it is only used for when start/finish
+  // nodes are clicked, as the next click on the grid ensures that it follows the logic for handleMouseEnter()
+  const onMouseLeave = () => {
     setClickedOnStartNode(false);
     setClickedOnFinishNode(false);
   }
 
+  // styles for entering dropdown
+  const onMouseEnterDropdown = () => {
+    if (optionsDisabled) {
+      setDropdownStyle({color: '#f5a0a0', cursor: 'default'});
+    } else {
+      setDropdownStyle({color: '#98d6e8', cursor: 'pointer'});
+    }
+  }
+
+  // styles for leaving dropdown
+  const onMouseLeaveDropdown = () => {
+    if (optionsDisabled) {
+      setDropdownStyle({color: '#f5a0a0', cursor: 'default'});
+    } else {
+      setDropdownStyle({color: '#fff', cursor: 'pointer'});
+    }
+  }
+
+  // creates a singular node
   const createNode = (row: number, col: number, wall: boolean) => {
     return {
       row: row,
@@ -385,15 +472,23 @@ function PathfindingVisualizer() {
         })}
       </div>
     )
-  })
+  });
+
   return (
-    <main className={"main-sidebar"} id={"main"}>
+    <main className={"main-sidebar"} id={"main"} onMouseUp={() => setMouseIsPressed(false)}>
       <div className={"sidebar"}>
         <div className={"sidebar-settings"}>
+          <AlgoSliderSetting settingDescription={'Control visualizer speed'}
+                             statusDescription={pathfindingSpeed + ' ms'}
+                             disabled={optionsDisabled}
+                             onChange={(e: Event, val: number | number[]) => setPathfindingSpeed(val as number)}
+                             defaultValue={20} min={20} max={1000}/>
+
           <div className={"sidebar-setting"}>
             <p> Choose an algorithm </p>
 
-            <div className={"selection-dropdown"} onClick={showAlgorithmsDropdown} style={dropdownStyle}>
+            <div className={"selection-dropdown"} onClick={showAlgorithmsDropdown} style={dropdownStyle}
+                 onMouseEnter={onMouseEnterDropdown} onMouseLeave={onMouseLeaveDropdown}>
               <div className={"current-option"}>
                 <p> {algorithm} </p>
               </div>
@@ -422,11 +517,18 @@ function PathfindingVisualizer() {
           <AlgoButtonSetting settingDescription={'Clear Grid'} buttonText={'Clear'}
                              disabled={optionsDisabled} onClick={clearGrid}/>
 
+          {showClearPath ?
+            <AlgoButtonSetting settingDescription={'Clear Path'} buttonText={'Clear'} disabled={optionsDisabled}
+                               onClick={() => {
+                                 setGrid(getUpdatedGrid);
+                                 setShowClearPath(false);
+                               }}/> : null}
+
         </div>
       </div>
 
       <div className={"main-content"} id={"grid-wrapper"} onMouseUp={(e) => onMouseUp(e)}
-           onMouseLeave={() => setMouseIsPressed(false)}>
+           onMouseLeave={onMouseLeave}>
         <div id={"grid"}>
           {nodes}
         </div>

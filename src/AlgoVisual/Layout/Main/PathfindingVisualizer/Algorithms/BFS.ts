@@ -53,5 +53,10 @@ export function bfsPath(t: Node) {
         shortestPath.unshift(currentNode);
         currentNode = currentNode.previousNode;
     }
+
+    if (shortestPath.length === 1){
+        return [];
+    }
+
     return shortestPath;
 }

@@ -31,5 +31,7 @@ export const disabledButtonStyle = {
 
 export const enabledButtonStyle = {
     cursor: 'pointer',
-    color: '#fff'
+    color: '#fff',
 }
+
+

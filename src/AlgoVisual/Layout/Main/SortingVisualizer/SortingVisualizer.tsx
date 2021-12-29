@@ -245,6 +245,22 @@ function SortingVisualizer(props: Props) {
     }, animationLength);
   }
 
+  const onMouseEnterDropdown = () => {
+    if (optionsDisabled){
+      setDropdownStyle({color: '#f5a0a0', cursor: 'default'});
+    } else {
+      setDropdownStyle({color: '#98d6e8', cursor: 'pointer'});
+    }
+  }
+
+  const onMouseLeaveDropdown = () => {
+    if (optionsDisabled){
+      setDropdownStyle({color: '#f5a0a0', cursor: 'default'});
+    } else {
+      setDropdownStyle({color: '#fff', cursor: 'pointer'});
+    }
+  }
+
   let bars = arr.map((value, idx) => (
     <div className="array-bar"
          key={idx}
@@ -270,7 +286,8 @@ function SortingVisualizer(props: Props) {
             <div className={"sidebar-setting"}>
               <p> Choose an algorithm </p>
 
-              <div className={"selection-dropdown"} style={dropdownStyle} onClick={showSortingAlgorithms}>
+              <div className={"selection-dropdown"} style={dropdownStyle} onClick={showSortingAlgorithms}
+                   onMouseEnter={onMouseEnterDropdown} onMouseLeave={onMouseLeaveDropdown}>
                 <div className={"current-option"}>
                   <p> {sortingAlgorithm} </p>
                 </div>

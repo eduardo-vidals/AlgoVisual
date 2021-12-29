@@ -11,7 +11,7 @@ function dfs(v: Node, t: Node, grid:Node[][], visitedNodes: Node[]){
         return;
     }
 
-    if (v.isWall) return;       
+    if (v.isWall) return;
 
     v.isVisited = true;
     visitedNodes.push(v);
@@ -46,5 +46,10 @@ export function dfsPath(t: Node){
         shortestPath.unshift(currentNode);
         currentNode = currentNode.previousNode;
     }
+
+    if (shortestPath.length === 1){
+        return [];
+    }
+
     return shortestPath;
 }
