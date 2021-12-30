@@ -13,7 +13,8 @@ class AStarNode implements Comparable<AStarNode> {
     this.prev = prev;
     this.manhattan = manhattanDistance(node, goal);
     if (prev !== undefined) {
-      this.moves = prev.moves + 1;
+      if (node.isWeight) this.moves = prev.moves + 5;
+      else this.moves = prev.moves + 1;
     } else {
       this.moves = 0;
     }

@@ -51,6 +51,10 @@ class IndexMinPQ<Type> {
         this.swim(this.qp[i]);
      }
 
+     keyOf(i: number){
+        return this.keys[i];
+     }
+
     private exch(i:number, j: number){
         let temp = this.pq[i];
         this.pq[i] = this.pq[j];

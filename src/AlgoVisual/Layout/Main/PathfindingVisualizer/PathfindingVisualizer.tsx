@@ -33,13 +33,15 @@ function PathfindingVisualizer() {
   const [dropdownStyle, setDropdownStyle] = useState(enabledButtonStyle);
   const [pathfindingSpeed, setPathfindingSpeed] = useState(20);
   const [clickedRun, setClickedRun] = useState(false);
-  const [startRow, setStartRow] = useState(3);
-  const [startCol, setStartCol] = useState(3);
-  const [finishRow, setFinishRow] = useState(27);
-  const [finishCol, setFinishCol] = useState(27);
+  const [startRow, setStartRow] = useState(Math.floor(rows / 2));
+  const [startCol, setStartCol] = useState(Math.floor(cols / 10));
+  const [finishRow, setFinishRow] = useState(Math.floor(rows / 2));
+  const [finishCol, setFinishCol] = useState(Math.floor(cols * 0.9));
   const [clickedOnStartNode, setClickedOnStartNode] = useState(false);
   const [clickedOnFinishNode, setClickedOnFinishNode] = useState(false);
   const [showClearPath, setShowClearPath] = useState(false);
+  const [enabledWeights, setEnabledWeights] = useState(false);
+  const [dropdownOptionClicked, setDropdownOptionClicked] = useState(false);
 
   // trigger before mounting anything to DOM
   useEffect(() => {
@@ -99,6 +101,13 @@ function PathfindingVisualizer() {
     displayAlgorithmsDropdown();
   }, [showAlgorithms])
 
+  useEffect(() => {
+    if (dropdownOptionClicked) {
+      setGrid(getUpdatedGrid);
+      setDropdownOptionClicked(false);
+    }
+  }, [dropdownOptionClicked])
+
   const showAlgorithmsDropdown = (e: React.MouseEvent) => {
     // ensures that you close menu when clicked again
     if (!showAlgorithms && !optionsDisabled) {
@@ -112,6 +121,7 @@ function PathfindingVisualizer() {
 
   const closeAlgorithmsDropdown = () => {
     setShowAlgorithms(false);
+    setEnabledWeights(false);
     document.removeEventListener("click", closeAlgorithmsDropdown)
   }
 
@@ -161,7 +171,6 @@ function PathfindingVisualizer() {
         case 'Dijkstra': {
           const visitedNodes = dijkstraSP(startNode, finishNode, grid);
           const pathNodes = shortestPath(finishNode);
-          console.log(pathNodes.length);
           setVisitedNodes(visitedNodes);
           setPathNodes(pathNodes);
           animateVisited(visitedNodes, pathNodes);
@@ -169,8 +178,6 @@ function PathfindingVisualizer() {
         }
         case 'A*': {
           const {visitedNodes, pathNodes} = AStar(startNode, finishNode, grid);
-          console.log(grid);
-          console.log(pathNodes.length);
           setVisitedNodes(visitedNodes);
           setPathNodes(pathNodes);
           animateVisited(visitedNodes, pathNodes);
@@ -195,7 +202,11 @@ function PathfindingVisualizer() {
 
     const nodeID = "node-" + row + "-" + col;
     const node = grid[row][col];
-    const className = node.isStart ? 'node node-start' : node.isFinish ? 'node node-finish' : node.isWall ? 'node' : 'node node-wall'
+
+    let className = node.isStart ? 'node node-start' : node.isFinish ? 'node node-finish' : node.isWall ? 'node' : 'node node-wall';
+    if (!node.isStart && !node.isFinish && enabledWeights) {
+      className = node.isWeight ? 'node' : 'node node-weight';
+    }
     document.getElementById(nodeID)!.className = className;
 
     if (node.isStart) {
@@ -208,8 +219,14 @@ function PathfindingVisualizer() {
 
     // ensures a wall is only toggled if it isn't a start/finish noded
     if (node.isStart || node.isFinish) return;
-    const newGrid = getNewGridWithWallToggled(grid, row, col);
-    setGrid(newGrid as Node[][]);
+
+    if (enabledWeights) {
+      const newGrid = getNewGridWithWeightToggled(grid, row, col);
+      setGrid(newGrid as Node[][]);
+    } else {
+      const newGrid = getNewGridWithWallToggled(grid, row, col);
+      setGrid(newGrid as Node[][]);
+    }
   }
 
   // handles logic for when mouse is moved within the grid
@@ -240,8 +257,14 @@ function PathfindingVisualizer() {
       return;
     }
 
+    if (enabledWeights) {
+      document.getElementById(nodeID)!.className = node.isWeight ? 'node' : 'node node-weight';
+      const newGrid = getNewGridWithWeightToggled(grid, row, col);
+      setGrid(newGrid as Node[][]);
+    }
+
     // otherwise, fill the walls up, ensures that start/finish nodes cannnot be filled up
-    if (!node.isStart && !node.isFinish) {
+    if (!node.isStart && !node.isFinish && !enabledWeights) {
       document.getElementById(nodeID)!.className = node.isWall ? 'node' : 'node node-wall';
       const newGrid = getNewGridWithWallToggled(grid, row, col);
       setGrid(newGrid as Node[][]);
@@ -251,7 +274,24 @@ function PathfindingVisualizer() {
   // returns grid with updated wall configuration
   const getNewGridWithWallToggled = (grid: Node[][], row: number, col: number) => {
     return update(grid, {
-      [row]: {[col]: {isWall: {$set: !grid[row][col].isWall}}}
+      [row]: {
+        [col]: {
+          isWeight: {$set: false},
+          isWall: {$set: !grid[row][col].isWall}
+        }
+      }
+    });
+  }
+
+  // returns grid with updated weight configuration
+  const getNewGridWithWeightToggled = (grid: Node[][], row: number, col: number) => {
+    return update(grid, {
+      [row]: {
+        [col]: {
+          isWeight: {$set: !grid[row][col].isWeight},
+          isWall: {$set: false}
+        }
+      }
     });
   }
 
@@ -300,7 +340,6 @@ function PathfindingVisualizer() {
     setShowClearPath(false);
   }
 
-
   // animates visited nodes
   const animateVisited = (visitedNodes: Node[], pathNodes: Node[]) => {
     let animationLength = (visitedNodes.length + pathNodes.length) * pathfindingSpeed;
@@ -316,7 +355,8 @@ function PathfindingVisualizer() {
         setTimeout(() => {
           const node = visitedNodes[i];
           const nodeID = "node-" + node.row + "-" + node.col;
-          document.getElementById(nodeID)!.className = 'node node-visited';
+          const className = node.isWeight ? 'node node-weight-visited' : 'node node-visited';
+          document.getElementById(nodeID)!.className = className;
         }, i * pathfindingSpeed);
       }
     }
@@ -351,6 +391,7 @@ function PathfindingVisualizer() {
   }
 
   // clears grid to initial settings, keeps the changed state of start/finish nodes if position was changed
+  // also clears walls/weights
   const clearGrid = () => {
     // clearing the actual grid itself
     setGrid(getInitialGrid);
@@ -376,13 +417,13 @@ function PathfindingVisualizer() {
     document.getElementById(finishNodeID)!.className = 'node node-finish';
   }
 
-  // initializes grid to an empty grid
+  // initializes grid to an empty grid (does not clear any current animations, only the 2D node array
   const getInitialGrid = () => {
     const grid = [];
     for (let row = 0; row < rows; row++) {
       const currentRow = [];
       for (let col = 0; col < cols; col++) {
-        currentRow.push(createNode(row, col, false));
+        currentRow.push(createNode(row, col, false, false));
       }
       grid.push(currentRow);
     }
@@ -398,8 +439,13 @@ function PathfindingVisualizer() {
       for (let col = 0; col < cols; col++) {
         const node = grid[row][col];
         const nodeID = "node-" + node.row + "-" + node.col;
-        document.getElementById(nodeID)!.className = node.isStart ? 'node node-start' : node.isFinish ? 'node node-finish' : node.isWall ? 'node node-wall' : 'node';
-        node.isWall ? currentRow.push(createNode(row, col, true)) : currentRow.push(createNode(row, col, false));
+        const isWeightAndAlgorithmSupported = node.isWeight && (algorithm === 'A*' || algorithm === 'Dijkstra');
+        document.getElementById(nodeID)!.className = node.isStart ? 'node node-start' :
+          node.isFinish ? 'node node-finish' : node.isWall ? 'node node-wall' : isWeightAndAlgorithmSupported ? 'node node-weight' : 'node';
+
+        node.isWall ? currentRow.push(createNode(row, col, true, false))
+          : isWeightAndAlgorithmSupported ? currentRow.push(createNode(row, col, false, true))
+            : currentRow.push(createNode(row, col, false, false));
       }
       updatedGrid.push(currentRow);
     }
@@ -415,6 +461,7 @@ function PathfindingVisualizer() {
     setClickedOnFinishNode(false);
     setGrid(getUpdatedGrid);
     setShowClearPath(false);
+    console.log(grid);
   }
 
   // ensures that logic for clicking nodes is reset upon leaving the grid, it is only used for when start/finish
@@ -443,15 +490,16 @@ function PathfindingVisualizer() {
   }
 
   // creates a singular node
-  const createNode = (row: number, col: number, wall: boolean) => {
+  const createNode = (row: number, col: number, wall: boolean, weight: boolean) => {
     return {
       row: row,
       col: col,
       isStart: row === startRow && col === startCol,
       isFinish: row === finishRow && col === finishCol,
-      weight: Infinity,
       isVisited: false,
       isWall: wall,
+      isWeight: weight,
+      weight: Infinity,
       previousNode: null
     } as Node;
   }
@@ -460,9 +508,9 @@ function PathfindingVisualizer() {
     return (
       <div className={"grid-row"}>
         {row.map((node) => {
-          const {row, col, isFinish, isStart, isWall} = node;
+          const {row, col, isFinish, isStart, isWall, isWeight} = node;
           return (
-            <GridNode row={row} col={col} isStart={isStart} isFinish={isFinish} isWall={isWall}
+            <GridNode row={row} col={col} isStart={isStart} isFinish={isFinish} isWall={isWall} isWeight={isWeight}
                       onMouseDown={() => handleMouseDown(row, col)}
                       onMouseEnter={() => handleMouseEnter(row, col)}
                       onTouchMove={() => handleMouseEnter(row, col)}
@@ -501,7 +549,10 @@ function PathfindingVisualizer() {
               <ul>
                 {
                   options.map(option => (
-                    <div onClick={() => setAlgorithm(option)}
+                    <div onClick={() => {
+                      setAlgorithm(option);
+                      setDropdownOptionClicked(true);
+                    }}
                          key={option}> {option} </div>
                   ))
                 }
@@ -513,6 +564,12 @@ function PathfindingVisualizer() {
 
           <AlgoButtonSetting settingDescription={'Recursive Backtrack Maze'} buttonText={'Generate Maze'}
                              disabled={optionsDisabled} onClick={mazeGeneration}/>
+
+          {algorithm === 'Dijkstra' || algorithm === 'A*' ?
+            <AlgoButtonSetting settingDescription={enabledWeights ? 'Enable Walls' : 'Enable Weights'}
+                               buttonText={enabledWeights ? 'Walls' : 'Weights'} disabled={optionsDisabled}
+                               onClick={() => enabledWeights ? setEnabledWeights(false) : setEnabledWeights(true)}/>
+            : null}
 
           <AlgoButtonSetting settingDescription={'Clear Grid'} buttonText={'Clear'}
                              disabled={optionsDisabled} onClick={clearGrid}/>

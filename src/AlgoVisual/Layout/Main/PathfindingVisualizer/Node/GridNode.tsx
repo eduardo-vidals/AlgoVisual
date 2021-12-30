@@ -6,6 +6,7 @@ type Props = {
   isFinish: boolean,
   isStart: boolean,
   isWall: boolean,
+  isWeight: boolean,
   onMouseDown?: React.MouseEventHandler<HTMLDivElement>,
   onMouseEnter?: React.MouseEventHandler<HTMLDivElement>,
   onMouseUp?: React.MouseEventHandler<HTMLDivElement>,
@@ -17,26 +18,12 @@ type Props = {
   style?: any
 };
 
-const enabledWallStyle = {
-  backgroundColor: '#33435d',
-  border: 1,
-  borderStyle: 'solid',
-  borderColor: '#33435d',
-}
-
-const disabledWallStyle = {
-  backgroundColor: '#fff',
-  border: 1,
-  borderStyle: 'solid',
-  borderColor: '#8dc3e7',
-}
-
 function GridNode(props: Props) {
   const {
     col,
     isFinish,
     isStart,
-    isWall,
+    isWeight,
     onMouseDown,
     onMouseOver,
     onMouseEnter,
@@ -53,7 +40,9 @@ function GridNode(props: Props) {
     <div id={nodeID} className={className} onMouseOver={onMouseOver} onMouseDown={onMouseDown}
          onMouseEnter={onMouseEnter}
          onMouseUp={onMouseUp} style={props.style} onTouchStart={onTouchStart} onTouchMove={onTouchMove}
-         onTouchEnd={onTouchEnd}/>
+         onTouchEnd={onTouchEnd}>
+      {isWeight ? <img src={'https://static.thenounproject.com/png/37770-200.png'} className={'node-weight-image'} alt={'node-weight'}/> : null}
+    </div>
   );
 }
 

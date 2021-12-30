@@ -22,13 +22,13 @@ export function dijkstraSP(s: Node, t: Node, grid: Node[][]) {
         if (minNode === t) return visitedNodes;
         const neighbors = getNeighbors(minNode, grid);
         for (const neighbor of neighbors){
-            relax(neighbor, visitedNodes, pq, colSize);
+            relax(neighbor, pq, colSize);
         }
     }
     return visitedNodes;
 }
 
-function relax(v: Node, visitedNodes: Node[], pq: IndexMinPQ<Number>, colSize: number){
+function relax(v: Node, pq: IndexMinPQ<Number>, colSize: number){
     const vIndex = getIndex(v.row, v.col, colSize);
     if (pq.contains(vIndex)){
         pq.decreaseKey(vIndex, v.weight);
@@ -48,7 +48,12 @@ function getNeighbors(v: Node, grid: Node[][]){
 
     let unvisitedNeighbors = neighbors.filter(neighbor => !neighbor.isVisited);
     for (const neighbor of unvisitedNeighbors){
-        neighbor.weight = v.weight + 1;
+        console.log(neighbor.weight);
+        if (neighbor.isWeight){
+            neighbor.weight = v.weight + 5;
+        } else {
+            neighbor.weight = v.weight + 1;
+        }
         neighbor.previousNode = v;
     }
     return unvisitedNeighbors;
