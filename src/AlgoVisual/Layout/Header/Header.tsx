@@ -74,14 +74,6 @@ function Header() {
                         </div>
                       </Link>
                     </li>
-
-                    <li>
-                      <Link to={"/AlgoVisual/datastructures"} className={"nav-link"}>
-                        <div className={"algos-option"}>
-                          <p> Data Structures </p>
-                        </div>
-                      </Link>
-                    </li>
                   </ul>
                 </div>
               </div>
@@ -95,13 +87,6 @@ function Header() {
               </Link>
             </li>
 
-            <li>
-              <Link to={"/AlgoVisual/about"} className={"nav-link"}>
-                <div className={"nav-option"}>
-                  <p> About </p>
-                </div>
-              </Link>
-            </li>
           </ul>
         </nav>
       </div>

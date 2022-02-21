@@ -7,7 +7,6 @@ import Documentation from "./Layout/Main/Documentation/Layout/Documentation";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import SortingVisualizer from "./Layout/Main/SortingVisualizer/SortingVisualizer";
 import PathfindingVisualizer from "./Layout/Main/PathfindingVisualizer/PathfindingVisualizer";
-import Introduction from "./Layout/Main/Documentation/Sections/Introduction/Introduction";
 
 function App() {
   return (
@@ -21,8 +20,7 @@ function App() {
 
           <Route path="/AlgoVisual/pathfinding" element={<PathfindingVisualizer/>}/>
 
-          <Route path="/AlgoVisual/documentation/*" element={<Documentation/>}>
-          </Route>
+          <Route path="/AlgoVisual/documentation/*" element={<Documentation/>}/>
 
           <Route path="/AlgoVisual/about"/>
 

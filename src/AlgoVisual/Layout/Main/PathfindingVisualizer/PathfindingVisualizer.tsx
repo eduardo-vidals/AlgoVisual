@@ -48,6 +48,9 @@ function PathfindingVisualizer() {
     resizeGrid();
     setGrid(getInitialGrid);
     let root = document.getElementById("grid-wrapper");
+
+    // NOTE: previous implementation of touch based walls
+    /*
     root!.ontouchmove = (e) => {
       // why does this work??? is this a reference to state grid??? is it cause of pass by val??
       const wallsGrid: Node[][] = grid.slice();
@@ -65,6 +68,7 @@ function PathfindingVisualizer() {
         }
       }
     }
+     */
 
     root!.onmousedown = (e) => {
       // breaks walls for  grid, do not remove

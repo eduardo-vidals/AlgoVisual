@@ -8,7 +8,7 @@ function Home() {
       <h1 id={"home-header-text"}> Visualizing made easy. </h1>
       <p id={"home-text"}>
         This is my first big project, please feel free to explore the beautiful visualization
-        of algorithms and data structures by clicking one of the buttons below.
+        of sorting and pathfinding algorithms by clicking one of the buttons below.
       </p>
 
       <div id={"buttons-menu"}>
@@ -18,11 +18,6 @@ function Home() {
 
         <Link to={"/AlgoVisual/pathfinding"}>
           <div className={"home-section"}> Pathfinding Algorithms</div>
-        </Link>
-
-
-        <Link to={"/AlgoVisual/datastructures"}>
-          <div className={"home-section"}> Data Structures</div>
         </Link>
       </div>
     </div>

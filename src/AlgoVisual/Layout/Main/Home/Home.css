@@ -47,8 +47,17 @@
 }
 
 @media (max-width: 500px){
+    #home-header-text {
+        font-size: 35px;
+    }
+
     #home-text {
         text-align: center;
         width: initial;
+        font-size: 15px;
+    }
+
+    .home-section {
+        font-size: 15px;
     }
 }
