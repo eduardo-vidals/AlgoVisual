@@ -6,19 +6,17 @@
 Website is deployed at: https://eduardovidals.github.io/AlgoVisual
 
 ## Features 
-**[⛏]** Control visualization speed
-
-**[⛏]** Visualize data dtructures
+**[✔]** Control visualization speed
 
 **[✔]** Visualize sorting algorithms
 
-**[⛏]** Visualize pathfinding algorithms
+**[✔]** Visualize pathfinding algorithms
 
-**[⛏]** Algorithm implementations provided in Java
+**[✔]** Weights/Walls supported for pathfinding visualizer
+
+**[✔]** Documentation section with explanation of algorithms
 
 ## Supported Algorithms
 **[✔]** Sorting Algorithms: Bubble Sort, Insertion Sort, Selection Sort, Merge Sort, Quick Sort, & Heap Sort
 
-**[⛏]** Data Structures: ArrayList, LinkedList, Stack, Deque, Queue, MaxPQ, MinPQ, BST, & Red-Black BST
-
-**[⛏]** Pathfinding Algorithms: DFS, BFS, Dijkstra's, A*, Kruskal's, Prim's
+**[✔]** Pathfinding Algorithms: DFS, BFS, Dijkstra's, A*
