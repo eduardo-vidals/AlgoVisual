@@ -1,5 +1,6 @@
 import React from "react";
 import "./GridNode.css";
+import weight from './assets/weight.png'
 
 type Props = {
   col: number,
@@ -41,7 +42,7 @@ function GridNode(props: Props) {
          onMouseEnter={onMouseEnter}
          onMouseUp={onMouseUp} style={props.style} onTouchStart={onTouchStart} onTouchMove={onTouchMove}
          onTouchEnd={onTouchEnd}>
-      {isWeight ? <img src={'https://static.thenounproject.com/png/37770-200.png'} className={'node-weight-image'} alt={'node-weight'}/> : null}
+      {isWeight ? <img src={weight} className={'node-weight-image'} alt={'node-weight'}/> : null}
     </div>
   );
 }

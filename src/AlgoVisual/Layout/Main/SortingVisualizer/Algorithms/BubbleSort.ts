@@ -1,7 +1,8 @@
-export function getBubbleSortAnimations(arr: number[]) {
+export function getBubbleSortAnimations(arr: number[]): [[number, number, string, string][], number[]] {
     let animations: [number, number, string, string][] = [];
+    arr = arr.slice();
     bubbleSort(arr, animations);
-    return animations;
+    return [animations, arr];
 }
 
 function bubbleSort(arr: number[], animations: [number, number, string, string][]) {

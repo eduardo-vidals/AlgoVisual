@@ -28,10 +28,12 @@ function SortingVisualizer(props: Props) {
   const [arr, setArr] = useState<number[]>([]);
   const [numberOfBars, setNumberOfBars] = useState(100);
   const [sortingSpeed, setSortingSpeed] = useState(1);
-  const [sortingAlgorithm, setSortingAlgorithm] = useState('Quick Sort');
+  const [sortingAlgorithm, setSortingAlgorithm] = useState('Merge Sort');
   const [showSortingOptions, setShowSortingOptions] = useState(false);
   const [optionsDisabled, setOptionsDisabled] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState(enabledButtonStyle);
+  const [dropdownOptionClicked, setDropdownOptionClicked] = useState(false);
+  const [clickedRun, setClickedRun] = useState(false);
 
   useEffect(() => {
     resetArray();
@@ -102,11 +104,16 @@ function SortingVisualizer(props: Props) {
     setSortingSpeed(value as number);
   }
 
-
   // methods for dropdown menu
   useEffect(() => {
     displaySortingAlgorithms()
-  }, [showSortingOptions])
+  }, [showSortingOptions]);
+
+  useEffect(() => {
+    if (dropdownOptionClicked) {
+      setDropdownOptionClicked(false);
+    }
+  }, [dropdownOptionClicked]);
 
   const showSortingAlgorithms = (e: React.MouseEvent) => {
     // ensures that you close menu when clicked again
@@ -136,14 +143,12 @@ function SortingVisualizer(props: Props) {
     }
   }
 
-  const changeAlgorithm = (option: string) => {
-    setSortingAlgorithm(option);
-  }
-
   // sorting animation algorithm
-  const sortingAnimations = (animations: [number, number, string, string][]) => {
+  const sortingAnimations = (arrs: [[number, number, string, string][], number[]]) => {
+    let [animations, arr] = arrs;
     let animationLength = animations.length * sortingSpeed;
-    enableSettings(animationLength);
+    enableSettings(animationLength, arr);
+
     for (let i = 0; i < animations.length; i++) {
       let arrayBars = document.getElementsByClassName('array-bar');
       let animationType = animations[i][2];
@@ -208,7 +213,10 @@ function SortingVisualizer(props: Props) {
 
   // run the sorting algorithm and disable buttons
   useEffect(() => {
-    if (optionsDisabled) {
+    if (clickedRun) {
+      setOptionsDisabled(true);
+      setDropdownStyle(disabledButtonStyle);
+
       switch (sortingAlgorithm) {
         case 'Bubble Sort':
           sortingAnimations(getBubbleSortAnimations(arr));
@@ -229,24 +237,21 @@ function SortingVisualizer(props: Props) {
           sortingAnimations(getHeapSortAnimations(arr));
           break;
       }
+      setClickedRun(false);
     }
-  }, [optionsDisabled])
-
-  const runSortingAlgorithm = () => {
-    setOptionsDisabled(true);
-    setDropdownStyle(disabledButtonStyle);
-  }
+  }, [clickedRun])
 
   // enable settings once the the animation is over
-  const enableSettings = (animationLength: number) => {
+  const enableSettings = (animationLength: number, arr: number[]) => {
     setTimeout(() => {
       setOptionsDisabled(false);
       setDropdownStyle(enabledButtonStyle);
+      setArr(arr);
     }, animationLength);
   }
 
   const onMouseEnterDropdown = () => {
-    if (optionsDisabled){
+    if (optionsDisabled) {
       setDropdownStyle({color: '#f5a0a0', cursor: 'default'});
     } else {
       setDropdownStyle({color: '#98d6e8', cursor: 'pointer'});
@@ -254,7 +259,7 @@ function SortingVisualizer(props: Props) {
   }
 
   const onMouseLeaveDropdown = () => {
-    if (optionsDisabled){
+    if (optionsDisabled) {
       setDropdownStyle({color: '#f5a0a0', cursor: 'default'});
     } else {
       setDropdownStyle({color: '#fff', cursor: 'pointer'});
@@ -300,7 +305,10 @@ function SortingVisualizer(props: Props) {
                 <ul>
                   {
                     options.map(option => (
-                      <div onClick={() => changeAlgorithm(option)}
+                      <div onClick={() => {
+                        setSortingAlgorithm(option);
+                        setDropdownOptionClicked(true);
+                      }}
                            key={option}> {option} </div>
                     ))
                   }
@@ -308,7 +316,7 @@ function SortingVisualizer(props: Props) {
               </div>
 
               <AlgoButton buttonText={"Run"} disabled={optionsDisabled}
-                          onClick={runSortingAlgorithm}/>
+                          onClick={() => setClickedRun(true)}/>
             </div>
 
             <AlgoButtonSetting settingDescription={"Reset the array"} buttonText={"Reset"}

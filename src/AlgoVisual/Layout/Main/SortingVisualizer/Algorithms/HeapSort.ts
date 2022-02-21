@@ -1,7 +1,8 @@
-export function getHeapSortAnimations(arr: number[]) {
+export function getHeapSortAnimations(arr: number[]): [[number, number, string, string][], number[]] {
     let animations: [number, number, string, string][] = [];
+    arr = arr.slice();
     heapSort(arr, animations);
-    return animations;
+    return [animations, arr];
 }
 
 function heapSort(arr: number[], animations: [number, number, string, string][]) {

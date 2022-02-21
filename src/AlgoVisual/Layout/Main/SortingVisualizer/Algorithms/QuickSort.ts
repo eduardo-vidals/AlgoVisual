@@ -1,7 +1,8 @@
-export function getQuickSortAnimations(arr: number[]) {
+export function getQuickSortAnimations(arr: number[]): [[number, number, string, string][], number[]] {
     let animations: [number, number, string, string][] = [];
+    arr = arr.slice();
     quickSort(arr, 0, arr.length - 1, animations);
-    return animations;
+    return [animations, arr];
 }
 
 function quickSort(arr: number[], l: number, h: number, animations: [number, number, string, string][]) {
@@ -14,7 +15,7 @@ function quickSort(arr: number[], l: number, h: number, animations: [number, num
 
 function partition(arr: number[], l: number, h: number, animations: [number, number, string, string][]) {
     let pivotIndex = randomIntFromInterval(l, h);
-    let swappedPivotIndex:any;
+    let swappedPivotIndex: any;
     let pivot = arr[pivotIndex];
     animations.push([pivotIndex, pivotIndex, 'pivot', 'insert']);
     let i = l - 1;
@@ -43,10 +44,10 @@ function partition(arr: number[], l: number, h: number, animations: [number, num
         swap(arr, i, j);
 
 
-        if (i === pivotIndex){
+        if (i === pivotIndex) {
             animations.push([j, j, 'pivot', 'insert']);
             swappedPivotIndex = j;
-        } else if (j === pivotIndex){
+        } else if (j === pivotIndex) {
             animations.push([i, i, 'pivot', 'insert']);
             swappedPivotIndex = i;
         }

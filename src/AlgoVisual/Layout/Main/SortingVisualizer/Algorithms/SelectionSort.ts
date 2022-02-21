@@ -1,7 +1,8 @@
-export function getSelectionSortAnimations(arr: number[]) {
+export function getSelectionSortAnimations(arr: number[]): [[number, number, string, string][], number[]] {
     let animations: [number, number, string, string][] = [];
+    arr = arr.slice();
     selectionSort(arr, animations);
-    return animations;
+    return [animations, arr];
 }
 
 function selectionSort(arr: number[], animations: [number, number, string, string][]) {
@@ -11,7 +12,7 @@ function selectionSort(arr: number[], animations: [number, number, string, strin
         for (let j = i; j < arr.length; j++) {
             animations.push([j, j, 'color', 'insert']);
             animations.push([j, j, 'color', 'revert']);
-            if (min > arr[j]){
+            if (min > arr[j]) {
                 min = arr[j];
                 minIndex = j;
             }

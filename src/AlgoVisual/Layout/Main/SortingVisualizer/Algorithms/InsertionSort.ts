@@ -1,7 +1,8 @@
-export function getInsertionSortAnimations(arr: number[]) {
+export function getInsertionSortAnimations(arr: number[]): [[number, number, string, string][], number[]] {
     let animations: [number, number, string, string][] = [];
+    arr = arr.slice()
     insertionSort(arr, animations);
-    return animations;
+    return [animations, arr];
 }
 
 function insertionSort(arr: number[], animations: [number, number, string, string][]) {

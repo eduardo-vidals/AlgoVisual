@@ -17,8 +17,8 @@ export function bfsVisited(s: Node, t: Node, grid: Node[][]) {
             neighbor.isVisited = true;
             queue.push(neighbor);
             visitedNodes.push(neighbor);
+            if (neighbor === t) return visitedNodes;
         }
-        if (node === t) return visitedNodes;
     }
 
     return visitedNodes;

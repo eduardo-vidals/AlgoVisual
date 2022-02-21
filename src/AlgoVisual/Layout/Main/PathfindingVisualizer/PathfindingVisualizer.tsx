@@ -337,7 +337,6 @@ function PathfindingVisualizer() {
         }, i * WALL_ANIMATION_LENGTH)
       }
     }
-    setShowClearPath(false);
   }
 
   // animates visited nodes
@@ -373,7 +372,7 @@ function PathfindingVisualizer() {
     }
   }
 
-  // enables settings after a certain period of time
+  // enables settings after a certain period of time (used for wall generation)
   const enableSettings = (animationLength: number) => {
     setTimeout(() => {
       setOptionsDisabled(false);
@@ -381,7 +380,7 @@ function PathfindingVisualizer() {
     }, animationLength);
   }
 
-  // enables settings after a certain period of time and enables the clear path option
+  // enables settings after a certain period of time and enables the clear path option (used for pathfinding algorithms)
   const enableSettingsClearPath = (animationLength: number) => {
     setTimeout(() => {
       setOptionsDisabled(false);
@@ -440,9 +439,11 @@ function PathfindingVisualizer() {
         const node = grid[row][col];
         const nodeID = "node-" + node.row + "-" + node.col;
         const isWeightAndAlgorithmSupported = node.isWeight && (algorithm === 'A*' || algorithm === 'Dijkstra');
+
         document.getElementById(nodeID)!.className = node.isStart ? 'node node-start' :
           node.isFinish ? 'node node-finish' : node.isWall ? 'node node-wall' : isWeightAndAlgorithmSupported ? 'node node-weight' : 'node';
 
+        // determines whether a node is a wall/weight in the grid array
         node.isWall ? currentRow.push(createNode(row, col, true, false))
           : isWeightAndAlgorithmSupported ? currentRow.push(createNode(row, col, false, true))
             : currentRow.push(createNode(row, col, false, false));
@@ -454,14 +455,15 @@ function PathfindingVisualizer() {
 
   // ensures that logic for clicking nodes is reset upon finishing a click within the grid
   const onMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.nativeEvent.preventDefault();
-    e.nativeEvent.stopImmediatePropagation();
-    setMouseIsPressed(false);
-    setClickedOnStartNode(false);
-    setClickedOnFinishNode(false);
-    setGrid(getUpdatedGrid);
-    setShowClearPath(false);
-    console.log(grid);
+    if (!optionsDisabled) {
+      e.nativeEvent.preventDefault();
+      e.nativeEvent.stopImmediatePropagation();
+      setMouseIsPressed(false);
+      setClickedOnStartNode(false);
+      setClickedOnFinishNode(false);
+      setGrid(getUpdatedGrid);
+      setShowClearPath(false);
+    }
   }
 
   // ensures that logic for clicking nodes is reset upon leaving the grid, it is only used for when start/finish

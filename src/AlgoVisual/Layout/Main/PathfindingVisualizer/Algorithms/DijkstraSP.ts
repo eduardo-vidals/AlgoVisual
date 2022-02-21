@@ -48,7 +48,6 @@ function getNeighbors(v: Node, grid: Node[][]){
 
     let unvisitedNeighbors = neighbors.filter(neighbor => !neighbor.isVisited);
     for (const neighbor of unvisitedNeighbors){
-        console.log(neighbor.weight);
         if (neighbor.isWeight){
             neighbor.weight = v.weight + 5;
         } else {

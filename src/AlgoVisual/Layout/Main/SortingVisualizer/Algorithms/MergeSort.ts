@@ -1,8 +1,9 @@
-export function getMergeSortAnimations(array: number[]) {
+export function getMergeSortAnimations(arr: number[]): [[number, number, string, string][], number[]] {
     let animations: [number, number, string, string][] = [];
-    const auxiliaryArray = array.slice();
-    mergeSort(array, 0, array.length - 1, auxiliaryArray, animations);
-    return animations;
+    const auxiliaryArray = arr.slice();
+    arr = arr.slice();
+    mergeSort(arr, 0, arr.length - 1, auxiliaryArray, animations);
+    return [animations, arr];
 }
 
 function mergeSort(mainArray: number[], startIdx: number, endIdx: number, auxiliaryArray: number[], animations: [number, number, string, string][]) {
