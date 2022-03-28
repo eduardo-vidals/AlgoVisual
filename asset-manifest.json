@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/AlgoVisual/static/css/main.b7dd16e5.css",
-    "main.js": "/AlgoVisual/static/js/main.2b0f1c94.js",
+    "main.js": "/AlgoVisual/static/js/main.fd237fae.js",
     "static/js/787.f84a92bc.chunk.js": "/AlgoVisual/static/js/787.f84a92bc.chunk.js",
     "index.html": "/AlgoVisual/index.html",
     "main.b7dd16e5.css.map": "/AlgoVisual/static/css/main.b7dd16e5.css.map",
-    "main.2b0f1c94.js.map": "/AlgoVisual/static/js/main.2b0f1c94.js.map",
+    "main.fd237fae.js.map": "/AlgoVisual/static/js/main.fd237fae.js.map",
     "787.f84a92bc.chunk.js.map": "/AlgoVisual/static/js/787.f84a92bc.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b7dd16e5.css",
-    "static/js/main.2b0f1c94.js"
+    "static/js/main.fd237fae.js"
   ]
 }
